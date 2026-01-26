@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DeployController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\V1\SubscriptionApplicationController;
+use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,8 @@ Route::prefix('v1')->middleware('throttle:30,1')->group(function () {
         ]);
     });
     Route::post('subscription-applications', [SubscriptionApplicationController::class, 'store']);
+    // Получение информации о подписке (для CRM)
+    Route::get('subscription', [SubscriptionController::class, 'show']);
 });
 
 /* Auth — всегда доступны (без auth middleware) */
