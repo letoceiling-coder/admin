@@ -1,0 +1,117 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-cad2045f.css",
+    "src": "resources/js/app.css"
+  },
+  "resources/js/app.css": {
+    "file": "assets/app-cad2045f.css",
+    "src": "resources/js/app.css"
+  },
+  "resources/js/app.js": {
+    "css": [
+      "assets/app-cad2045f.css"
+    ],
+    "dynamicImports": [
+      "resources/js/pages/HomePage.vue",
+      "resources/js/pages/admin/auth/LoginPage.vue",
+      "resources/js/pages/admin/auth/RegisterPage.vue",
+      "resources/js/pages/admin/auth/ForgotPasswordPage.vue",
+      "resources/js/pages/admin/auth/ResetPasswordPage.vue",
+      "resources/js/layouts/AdminLayout.vue",
+      "resources/js/pages/admin/DashboardPage.vue",
+      "resources/js/pages/admin/SubscribersPage.vue",
+      "resources/js/pages/admin/SubscriberDetailPage.vue",
+      "resources/js/pages/admin/SubscriptionApplicationsPage.vue"
+    ],
+    "file": "assets/app-4a5d56cf.js",
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  },
+  "resources/js/layouts/AdminLayout.css": {
+    "file": "assets/AdminLayout-d20006b3.css",
+    "src": "resources/js/layouts/AdminLayout.css"
+  },
+  "resources/js/layouts/AdminLayout.vue": {
+    "css": [
+      "assets/AdminLayout-d20006b3.css"
+    ],
+    "file": "assets/AdminLayout-129d13d7.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/layouts/AdminLayout.vue"
+  },
+  "resources/js/pages/HomePage.vue": {
+    "file": "assets/HomePage-412afb3a.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/HomePage.vue"
+  },
+  "resources/js/pages/admin/DashboardPage.vue": {
+    "file": "assets/DashboardPage-ef82c987.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/DashboardPage.vue"
+  },
+  "resources/js/pages/admin/SubscriberDetailPage.vue": {
+    "file": "assets/SubscriberDetailPage-a6196132.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/SubscriberDetailPage.vue"
+  },
+  "resources/js/pages/admin/SubscribersPage.vue": {
+    "file": "assets/SubscribersPage-97052c31.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/SubscribersPage.vue"
+  },
+  "resources/js/pages/admin/SubscriptionApplicationsPage.vue": {
+    "file": "assets/SubscriptionApplicationsPage-81e02cdc.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/SubscriptionApplicationsPage.vue"
+  },
+  "resources/js/pages/admin/auth/ForgotPasswordPage.vue": {
+    "file": "assets/ForgotPasswordPage-1a34a2ec.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/auth/ForgotPasswordPage.vue"
+  },
+  "resources/js/pages/admin/auth/LoginPage.vue": {
+    "file": "assets/LoginPage-e02f59e1.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/auth/LoginPage.vue"
+  },
+  "resources/js/pages/admin/auth/RegisterPage.vue": {
+    "file": "assets/RegisterPage-b0e60537.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/auth/RegisterPage.vue"
+  },
+  "resources/js/pages/admin/auth/ResetPasswordPage.vue": {
+    "file": "assets/ResetPasswordPage-81972c58.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/admin/auth/ResetPasswordPage.vue"
+  }
+}
