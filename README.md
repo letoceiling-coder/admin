@@ -1,66 +1,206 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ADMIN Panel - Laravel 10
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Админ панель для управления подписчиками и заявками на подписку с интеграцией CRM проекта.
 
-## About Laravel
+## 🚀 Технологический стек
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Backend**: Laravel 10 (PHP 8.2)
+- **Auth**: Laravel Sanctum (SPA authentication)
+- **Frontend**: Vue 3 (Composition API, `<script setup>`)
+- **State Management**: Pinia
+- **Routing**: Vue Router
+- **HTTP Client**: Axios
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Основные возможности
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Аутентификация и авторизация
+- Регистрация, вход, восстановление пароля
+- Ролевая система доступа (user, manager, administrator, developer)
+- Защита маршрутов `/admin/*` для manager/administrator
+- SPA аутентификация через Laravel Sanctum
 
-## Learning Laravel
+### Управление подписчиками
+- Список подписчиков с пагинацией и фильтрацией
+- Детальная страница подписчика
+- Поля: домен, логин, даты подписки, активность, план, API токен, данные об оплате
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Управление заявками на подписку
+- Список заявок с фильтрацией
+- Одобрение/отклонение заявок
+- Автоматическое создание подписчика при одобрении
+- Уведомления для manager/administrator о новых заявках
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Планы подписки
+- Стандартный план (standard)
+- Премиум план (premium)
+- Настройка стоимости и ограничений через JSON поле
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Интеграция с CRM
+- Публичный API endpoint `/api/v1/subscription-applications` для приема заявок от CRM
+- Генерация уникального API токена для каждой заявки
+- Срок действия заявки: 3 дня
+- Database Notifications для уведомлений администраторов
 
-## Laravel Sponsors
+## 📦 Установка
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Требования
+- PHP >= 8.2
+- Composer
+- Node.js >= 18
+- MySQL >= 8.0
 
-### Premium Partners
+### Шаги установки
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+1. **Клонировать репозиторий**
+```bash
+git clone https://github.com/letoceiling-coder/admin.git
+cd admin
+```
 
-## Contributing
+2. **Установить зависимости**
+```bash
+composer install
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Настроить окружение**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+4. **Настроить базу данных в `.env`**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_admin
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Запустить миграции и сидеры**
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-## Security Vulnerabilities
+6. **Собрать фронтенд**
+```bash
+npm run build
+# или для разработки
+npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Создать администратора**
+```bash
+php artisan user:create
+# или с параметрами
+php artisan user:create --email=admin@example.com --password=password123 --name="Admin User"
+```
 
-## License
+## 🔧 Конфигурация
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Переменные окружения
+
+Основные настройки в `.env`:
+
+```env
+APP_NAME="ADMIN Panel"
+APP_URL=http://admin.loc
+
+DB_DATABASE=laravel_admin
+
+# Для интеграции с CRM (если требуется)
+# APP_CRM_URL=http://crm.loc/api/v1/
+```
+
+### API Endpoints
+
+#### Публичные (без авторизации)
+- `GET /api/v1/ping` - Проверка доступности API и текущей БД
+- `POST /api/v1/subscription-applications` - Создание заявки на подписку (для CRM)
+
+#### Защищенные (требуется авторизация)
+- `GET /api/admin/plans` - Список активных планов
+- `GET /api/admin/subscribers` - Список подписчиков
+- `GET /api/admin/subscribers/{id}` - Детали подписчика
+- `GET /api/admin/subscription-applications` - Список заявок
+- `POST /api/admin/subscription-applications/{id}/approve` - Одобрить заявку
+- `POST /api/admin/subscription-applications/{id}/reject` - Отклонить заявку
+
+## 📚 Документация
+
+- [План интеграции CRM-ADMIN](docs/PLAN_CRM_ADMIN_INTEGRATION.md)
+- [Решение проблем интеграции](docs/TROUBLESHOOTING_CRM_ADMIN.md)
+
+## 🧪 Тестирование
+
+### Запуск тестов
+```bash
+php artisan test
+```
+
+### Проверка API
+```bash
+# Проверка ping endpoint
+curl http://admin.loc/api/v1/ping
+
+# Ожидается: {"ok":true,"db":"laravel_admin"}
+```
+
+## 🏗️ Структура проекта
+
+```
+admin/
+├── app/
+│   ├── Console/Commands/        # Artisan команды
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   │   ├── Admin/       # Контроллеры для админ панели
+│   │   │   │   └── V1/          # Публичные API endpoints
+│   │   │   └── Api/             # Общие API контроллеры
+│   │   ├── Middleware/          # Middleware
+│   │   └── Requests/            # Form Requests
+│   ├── Models/                  # Eloquent модели
+│   └── Notifications/           # Database Notifications
+├── database/
+│   ├── migrations/              # Миграции БД
+│   └── seeders/                 # Сидеры
+├── resources/
+│   ├── js/
+│   │   ├── api/                 # Axios конфигурация
+│   │   ├── components/          # Vue компоненты
+│   │   ├── pages/               # Страницы
+│   │   ├── router/              # Vue Router
+│   │   └── stores/              # Pinia stores
+│   └── views/                   # Blade шаблоны
+└── routes/
+    ├── api.php                  # API маршруты
+    └── web.php                  # Web маршруты
+```
+
+## 🔐 Роли и доступ
+
+- **user** (level 1) - Базовый пользователь
+- **manager** (level 2) - Менеджер (доступ к `/admin/*`)
+- **administrator** (level 3) - Администратор (доступ к `/admin/*`)
+- **developer** (level 4) - Разработчик (полный доступ)
+
+## 📝 Лицензия
+
+Проект использует Laravel framework, который является open-sourced software под лицензией [MIT](https://opensource.org/licenses/MIT).
+
+## 🔗 Связанные проекты
+
+- [CRM Project](https://github.com/letoceiling-coder/crm) - Проект CRM с интеграцией в ADMIN
+
+## 📞 Поддержка
+
+При возникновении проблем проверьте:
+1. Логи: `storage/logs/laravel.log`
+2. Конфигурацию БД: `php artisan config:show database.connections.mysql.database`
+3. Диагностический endpoint: `http://admin.loc/api/v1/ping`
