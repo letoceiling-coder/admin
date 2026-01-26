@@ -7,6 +7,7 @@ use App\Models\Subscriber;
 use App\Models\SubscriptionApplication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionController extends Controller
 {
@@ -68,7 +69,7 @@ class SubscriptionController extends Controller
             // Определяем статус: если is_active = true, то 'active', иначе 'inactive'
             $status = $subscriber->is_active ? 'active' : 'inactive';
             
-            return response()->json([
+            $responseData = [
                 'success' => true,
                 'data' => [
                     'status' => $status,
@@ -87,7 +88,20 @@ class SubscriptionController extends Controller
                         'limits' => $subscriber->plan->limits,
                     ] : null,
                 ],
+            ];
+            
+            // Логируем данные перед отправкой
+            Log::info('SubscriptionController (ADMIN): отправляем данные подписчика', [
+                'subscriber_id' => $subscriber->id,
+                'has_login' => !empty($subscriber->login),
+                'login' => $subscriber->login,
+                'has_plan' => !is_null($subscriber->plan),
+                'plan_id' => $subscriber->plan?->id,
+                'plan_name' => $subscriber->plan?->name,
+                'response_data_keys' => array_keys($responseData['data']),
             ]);
+            
+            return response()->json($responseData);
         }
 
         // Если есть заявка - возвращаем её данные
