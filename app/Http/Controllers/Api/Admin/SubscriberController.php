@@ -44,4 +44,41 @@ class SubscriberController extends Controller
 
         return response()->json(['data' => $subscriber]);
     }
+
+    /**
+     * Обновление диапазона подписки (начало, конец) и активности.
+     */
+    public function update(Request $request, Subscriber $subscriber): JsonResponse
+    {
+        $validated = $request->validate([
+            'subscription_start' => 'nullable|date',
+            'subscription_end' => [
+                'nullable',
+                'date',
+                function (string $attr, $value, \Closure $fail) use ($request): void {
+                    $start = $request->input('subscription_start');
+                    if ($value && $start && strtotime($value) < strtotime($start)) {
+                        $fail('Конец подписки должен быть не раньше начала.');
+                    }
+                },
+            ],
+            'is_active' => 'boolean',
+        ]);
+
+        if (array_key_exists('subscription_start', $validated)) {
+            $subscriber->subscription_start = $validated['subscription_start'];
+        }
+        if (array_key_exists('subscription_end', $validated)) {
+            $subscriber->subscription_end = $validated['subscription_end'];
+        }
+        if (array_key_exists('is_active', $validated)) {
+            $subscriber->is_active = $request->boolean('is_active');
+        }
+        $subscriber->save();
+
+        $subscriber->load('plan');
+        $subscriber->makeVisible('api_token');
+
+        return response()->json(['data' => $subscriber]);
+    }
 }

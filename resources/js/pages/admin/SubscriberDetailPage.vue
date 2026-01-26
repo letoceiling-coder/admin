@@ -70,6 +70,61 @@
         </dl>
       </div>
 
+      <div class="bg-card rounded-lg border border-border overflow-hidden">
+        <div class="px-4 py-3 border-b border-border bg-muted/30">
+          <h2 class="font-semibold text-foreground">Управление диапазоном подписки</h2>
+        </div>
+        <form class="p-6 space-y-4 max-w-xl" @submit.prevent="saveRange">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+            <label for="sub-start" class="text-sm font-medium text-foreground">Начало</label>
+            <div class="sm:col-span-2">
+              <input
+                id="sub-start"
+                v-model="rangeForm.subscription_start"
+                type="date"
+                class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+            <label for="sub-end" class="text-sm font-medium text-foreground">Конец</label>
+            <div class="sm:col-span-2">
+              <input
+                id="sub-end"
+                v-model="rangeForm.subscription_end"
+                type="date"
+                class="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+            <span class="text-sm font-medium text-foreground">Активен</span>
+            <div class="sm:col-span-2">
+              <input
+                id="sub-active"
+                v-model="rangeForm.is_active"
+                type="checkbox"
+                class="rounded border-input"
+              />
+              <label for="sub-active" class="ml-2 text-sm text-muted-foreground">Подписка активна</label>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 pt-2">
+            <button
+              type="submit"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              :disabled="saving"
+            >
+              {{ saving ? 'Сохранение…' : 'Сохранить' }}
+            </button>
+          </div>
+        </form>
+        <div v-if="rangeError || rangeSuccess" class="px-6 pb-4 space-y-1">
+          <p v-if="rangeError" class="text-sm text-red-600 dark:text-red-400">{{ rangeError }}</p>
+          <p v-if="rangeSuccess" class="text-sm text-green-600 dark:text-green-400">{{ rangeSuccess }}</p>
+        </div>
+      </div>
+
       <div v-if="hasPaymentData" class="bg-card rounded-lg border border-border overflow-hidden">
         <div class="px-4 py-3 border-b border-border bg-muted/30">
           <h2 class="font-semibold text-foreground">Данные об оплате</h2>
@@ -97,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import apiClient from '@/api/axios';
 
@@ -105,11 +160,40 @@ const route = useRoute();
 const subscriber = ref(null);
 const loading = ref(false);
 const error = ref('');
+const saving = ref(false);
+const rangeError = ref('');
+const rangeSuccess = ref('');
+
+const rangeForm = reactive({
+  subscription_start: '',
+  subscription_end: '',
+  is_active: true,
+});
 
 const hasPaymentData = computed(() => {
   const pd = subscriber.value?.payment_data;
   return pd && typeof pd === 'object' && Object.keys(pd).length > 0;
 });
+
+function toYMD(val) {
+  if (!val) return '';
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function syncRangeForm() {
+  const s = subscriber.value;
+  if (!s) return;
+  rangeForm.subscription_start = toYMD(s.subscription_start);
+  rangeForm.subscription_end = toYMD(s.subscription_end);
+  rangeForm.is_active = !!s.is_active;
+  rangeError.value = '';
+  rangeSuccess.value = '';
+}
 
 async function fetchSubscriber() {
   const id = route.params.id;
@@ -120,11 +204,35 @@ async function fetchSubscriber() {
     const { data } = await apiClient.get('/admin/subscribers/' + id);
     subscriber.value = data?.data ?? null;
     if (!subscriber.value) error.value = 'Подписчик не найден';
+    else syncRangeForm();
   } catch (e) {
     subscriber.value = null;
     error.value = e.response?.data?.message ?? 'Ошибка загрузки';
   } finally {
     loading.value = false;
+  }
+}
+
+async function saveRange() {
+  const id = route.params.id;
+  if (!id || !subscriber.value) return;
+  saving.value = true;
+  rangeError.value = '';
+  rangeSuccess.value = '';
+  try {
+    const payload = {
+      subscription_start: rangeForm.subscription_start || null,
+      subscription_end: rangeForm.subscription_end || null,
+      is_active: rangeForm.is_active,
+    };
+    const { data } = await apiClient.put('/admin/subscribers/' + id, payload);
+    subscriber.value = data?.data ?? subscriber.value;
+    rangeSuccess.value = 'Диапазон подписки обновлён.';
+  } catch (e) {
+    const d = e.response?.data;
+    rangeError.value = d?.message ?? (d?.errors ? Object.values(d.errors).flat().join(' ') : 'Ошибка сохранения');
+  } finally {
+    saving.value = false;
   }
 }
 

@@ -51,6 +51,7 @@ Route::middleware(['auth:sanctum', 'admin.access'])->prefix('admin')->group(func
     Route::delete('plans/{plan}', [AdminPlanController::class, 'destroy']);
     Route::get('subscribers', [AdminSubscriberController::class, 'index']);
     Route::get('subscribers/{subscriber}', [AdminSubscriberController::class, 'show']);
+    Route::put('subscribers/{subscriber}', [AdminSubscriberController::class, 'update']);
     Route::get('subscription-applications', [AdminSubscriptionApplicationController::class, 'index']);
     Route::post('subscription-applications/{application}/approve', [AdminSubscriptionApplicationController::class, 'approve']);
     Route::post('subscription-applications/{application}/reject', [AdminSubscriptionApplicationController::class, 'reject']);

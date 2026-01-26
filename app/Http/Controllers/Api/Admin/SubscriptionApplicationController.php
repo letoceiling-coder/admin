@@ -108,7 +108,7 @@ class SubscriptionApplicationController extends Controller
         }
 
         $start = now();
-        $end = $start->copy()->addYear();
+        $end = $start->copy()->addDays(3);
 
         $subscriber = Subscriber::create([
             'domain' => $application->domain,
