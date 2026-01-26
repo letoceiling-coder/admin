@@ -45,6 +45,10 @@ Route::middleware('auth:sanctum')->patch('/notifications/{id}/read', [Notificati
 /* /admin/* API — только manager и administrator */
 Route::middleware(['auth:sanctum', 'admin.access'])->prefix('admin')->group(function () {
     Route::get('plans', [AdminPlanController::class, 'index']);
+    Route::post('plans', [AdminPlanController::class, 'store']);
+    Route::get('plans/{plan}', [AdminPlanController::class, 'show']);
+    Route::put('plans/{plan}', [AdminPlanController::class, 'update']);
+    Route::delete('plans/{plan}', [AdminPlanController::class, 'destroy']);
     Route::get('subscribers', [AdminSubscriberController::class, 'index']);
     Route::get('subscribers/{subscriber}', [AdminSubscriberController::class, 'show']);
     Route::get('subscription-applications', [AdminSubscriptionApplicationController::class, 'index']);

@@ -62,6 +62,24 @@ const routes = [
         component: () => import('../pages/admin/SubscriptionApplicationsPage.vue'),
         meta: { title: 'Заявки на подписку' },
       },
+      {
+        path: 'plans',
+        name: 'admin.plans',
+        component: () => import('../pages/admin/PlansPage.vue'),
+        meta: { title: 'Планы' },
+      },
+      {
+        path: 'plans/create',
+        name: 'admin.plans.create',
+        component: () => import('../pages/admin/PlanFormPage.vue'),
+        meta: { title: 'Создание плана' },
+      },
+      {
+        path: 'plans/:id/edit',
+        name: 'admin.plans.edit',
+        component: () => import('../pages/admin/PlanFormPage.vue'),
+        meta: { title: 'Редактирование плана' },
+      },
     ],
   },
 ];
