@@ -626,6 +626,18 @@ class Deploy extends Command
                         $this->line("     Git Pull: {$dataArray['git_pull']}");
                     }
 
+                    // Информация об обновлении кода
+                    if (isset($dataArray['commit_changed'])) {
+                        if ($dataArray['commit_changed']) {
+                            $oldCommit = isset($dataArray['old_commit_hash']) ? substr($dataArray['old_commit_hash'], 0, 7) : 'unknown';
+                            $newCommit = isset($dataArray['new_commit_hash']) ? substr($dataArray['new_commit_hash'], 0, 7) : 'unknown';
+                            $this->info("     Код обновлен: {$oldCommit} → {$newCommit}");
+                        } else {
+                            $currentCommit = isset($dataArray['new_commit_hash']) ? substr($dataArray['new_commit_hash'], 0, 7) : 'unknown';
+                            $this->line("     Код: актуален (коммит {$currentCommit})");
+                        }
+                    }
+
                     if (isset($dataArray['composer_install'])) {
                         $this->line("     Composer: {$dataArray['composer_install']}");
                     }
