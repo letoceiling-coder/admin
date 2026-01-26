@@ -16,7 +16,11 @@ const apiClient = axios.create({
 // Перехватчик запросов
 apiClient.interceptors.request.use(
   (config) => {
-    // CSRF токен добавляется автоматически через cookies
+    // Добавляем Bearer токен из localStorage, если он есть
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -34,6 +38,8 @@ apiClient.interceptors.response.use(
 
     // Обработка 401 (Unauthorized)
     if (response?.status === 401) {
+      // Удаляем токен при ошибке авторизации
+      localStorage.removeItem('auth_token');
       // Перенаправление на страницу входа будет обработано в router
       console.error('Unauthorized: Authentication required');
     }

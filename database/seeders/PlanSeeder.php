@@ -10,7 +10,9 @@ class PlanSeeder extends Seeder
     public function run(): void
     {
         $now = now();
-        DB::table('plans')->insert([
+        
+        // Проверяем, существуют ли планы, чтобы избежать дубликатов
+        $plans = [
             [
                 'name' => 'standard',
                 'cost' => 0,
@@ -27,6 +29,23 @@ class PlanSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
-        ]);
+        ];
+
+        foreach ($plans as $plan) {
+            $exists = DB::table('plans')->where('name', $plan['name'])->exists();
+            if (!$exists) {
+                DB::table('plans')->insert($plan);
+            } else {
+                // Обновляем существующий план, если нужно
+                DB::table('plans')
+                    ->where('name', $plan['name'])
+                    ->update([
+                        'cost' => $plan['cost'],
+                        'is_active' => $plan['is_active'],
+                        'limits' => $plan['limits'],
+                        'updated_at' => $now,
+                    ]);
+            }
+        }
     }
 }

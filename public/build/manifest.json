@@ -23,7 +23,7 @@
       "resources/js/pages/admin/SubscriberDetailPage.vue",
       "resources/js/pages/admin/SubscriptionApplicationsPage.vue"
     ],
-    "file": "assets/app-4a5d56cf.js",
+    "file": "assets/app-1a9e0104.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   },
@@ -35,7 +35,7 @@
     "css": [
       "assets/AdminLayout-d20006b3.css"
     ],
-    "file": "assets/AdminLayout-129d13d7.js",
+    "file": "assets/AdminLayout-c90ea884.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -43,7 +43,7 @@
     "src": "resources/js/layouts/AdminLayout.vue"
   },
   "resources/js/pages/HomePage.vue": {
-    "file": "assets/HomePage-412afb3a.js",
+    "file": "assets/HomePage-0c7edd77.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -51,7 +51,7 @@
     "src": "resources/js/pages/HomePage.vue"
   },
   "resources/js/pages/admin/DashboardPage.vue": {
-    "file": "assets/DashboardPage-ef82c987.js",
+    "file": "assets/DashboardPage-e4251768.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -59,7 +59,7 @@
     "src": "resources/js/pages/admin/DashboardPage.vue"
   },
   "resources/js/pages/admin/SubscriberDetailPage.vue": {
-    "file": "assets/SubscriberDetailPage-a6196132.js",
+    "file": "assets/SubscriberDetailPage-51aeaed5.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -67,7 +67,7 @@
     "src": "resources/js/pages/admin/SubscriberDetailPage.vue"
   },
   "resources/js/pages/admin/SubscribersPage.vue": {
-    "file": "assets/SubscribersPage-97052c31.js",
+    "file": "assets/SubscribersPage-4eba7a0e.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -75,7 +75,7 @@
     "src": "resources/js/pages/admin/SubscribersPage.vue"
   },
   "resources/js/pages/admin/SubscriptionApplicationsPage.vue": {
-    "file": "assets/SubscriptionApplicationsPage-81e02cdc.js",
+    "file": "assets/SubscriptionApplicationsPage-6a39fe68.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -83,7 +83,7 @@
     "src": "resources/js/pages/admin/SubscriptionApplicationsPage.vue"
   },
   "resources/js/pages/admin/auth/ForgotPasswordPage.vue": {
-    "file": "assets/ForgotPasswordPage-1a34a2ec.js",
+    "file": "assets/ForgotPasswordPage-ed710ce1.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -91,7 +91,7 @@
     "src": "resources/js/pages/admin/auth/ForgotPasswordPage.vue"
   },
   "resources/js/pages/admin/auth/LoginPage.vue": {
-    "file": "assets/LoginPage-e02f59e1.js",
+    "file": "assets/LoginPage-cb4acafb.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -99,7 +99,7 @@
     "src": "resources/js/pages/admin/auth/LoginPage.vue"
   },
   "resources/js/pages/admin/auth/RegisterPage.vue": {
-    "file": "assets/RegisterPage-b0e60537.js",
+    "file": "assets/RegisterPage-1bfcb724.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -107,7 +107,7 @@
     "src": "resources/js/pages/admin/auth/RegisterPage.vue"
   },
   "resources/js/pages/admin/auth/ResetPasswordPage.vue": {
-    "file": "assets/ResetPasswordPage-81972c58.js",
+    "file": "assets/ResetPasswordPage-f5d58555.js",
     "imports": [
       "resources/js/app.js"
     ],

@@ -24,15 +24,19 @@ class AuthController extends Controller
             return response()->json(['message' => 'Ошибка валидации', 'errors' => $v->errors()], 422);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'), (bool) $request->input('remember', false))) {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Неверный email или пароль.'], 401);
         }
 
-        $request->session()->regenerate();
-        $user = Auth::user()->load('role');
+        // Создаем токен Sanctum вместо использования сессии
+        $token = $user->createToken('auth_token')->plainTextToken;
+        $user->load('role');
 
         return response()->json([
             'user' => $user,
+            'token' => $token,
             'message' => 'Успешный вход.',
         ]);
     }
@@ -58,21 +62,21 @@ class AuthController extends Controller
             'role_id' => Role::where('name', Role::USER)->value('id') ?: 1,
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        // Создаем токен Sanctum вместо использования сессии
+        $token = $user->createToken('auth_token')->plainTextToken;
         $user->load('role');
 
         return response()->json([
             'user' => $user,
+            'token' => $token,
             'message' => 'Регистрация успешна.',
         ], 201);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Удаляем текущий токен Sanctum
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Выход выполнен.']);
     }

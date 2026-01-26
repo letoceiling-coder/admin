@@ -29,6 +29,9 @@ class SubscriptionApplication extends Model
 
     public function isExpired(): bool
     {
+        if (!$this->expires_at) {
+            return false; // Если срок не установлен, считаем что не истёк
+        }
         return $this->expires_at->isPast();
     }
 }

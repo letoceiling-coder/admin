@@ -8,6 +8,7 @@ use App\Models\SubscriptionApplication;
 use App\Models\Subscriber;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionApplicationController extends Controller
 {
@@ -38,20 +39,72 @@ class SubscriptionApplicationController extends Controller
 
     public function approve(Request $request, SubscriptionApplication $application): JsonResponse
     {
+        Log::info('Попытка одобрения заявки', [
+            'application_id' => $application->id,
+            'status' => $application->status,
+            'expires_at' => $application->expires_at?->toDateTimeString(),
+            'user_id' => $request->user()?->id,
+        ]);
+
+        // Проверка статуса заявки
         if (!$application->isPending()) {
-            return response()->json(['message' => 'Заявка уже обработана'], 422);
+            Log::warning('Попытка одобрить уже обработанную заявку', [
+                'application_id' => $application->id,
+                'current_status' => $application->status,
+            ]);
+            return response()->json([
+                'message' => 'Заявка уже обработана',
+                'errors' => [
+                    'status' => ['Текущий статус заявки: ' . $application->status]
+                ]
+            ], 422);
         }
+        
+        // Проверка срока действия
         if ($application->isExpired()) {
-            return response()->json(['message' => 'Срок действия заявки истёк'], 422);
+            Log::warning('Попытка одобрить истёкшую заявку', [
+                'application_id' => $application->id,
+                'expires_at' => $application->expires_at?->toDateTimeString(),
+            ]);
+            return response()->json([
+                'message' => 'Срок действия заявки истёк',
+                'errors' => [
+                    'expires_at' => ['Срок действия истёк: ' . ($application->expires_at ? $application->expires_at->format('Y-m-d H:i:s') : 'не установлен')]
+                ]
+            ], 422);
         }
 
+        // Получение плана
         $planId = $request->input('plan_id');
         if (!$planId) {
             $planId = Plan::where('name', 'standard')->value('id');
+            if (!$planId) {
+                return response()->json([
+                    'message' => 'План "standard" не найден в базе данных',
+                    'errors' => [
+                        'plan' => ['Создайте план "standard" в базе данных или укажите plan_id в запросе']
+                    ]
+                ], 422);
+            }
         }
+        
         $plan = Plan::find($planId);
-        if (!$plan || !$plan->is_active) {
-            return response()->json(['message' => 'Неверный или неактивный план'], 422);
+        if (!$plan) {
+            return response()->json([
+                'message' => 'План не найден',
+                'errors' => [
+                    'plan_id' => ['План с ID ' . $planId . ' не существует']
+                ]
+            ], 422);
+        }
+        
+        if (!$plan->is_active) {
+            return response()->json([
+                'message' => 'План неактивен',
+                'errors' => [
+                    'plan' => ['План "' . $plan->name . '" неактивен. Активируйте план или выберите другой.']
+                ]
+            ], 422);
         }
 
         $start = now();
