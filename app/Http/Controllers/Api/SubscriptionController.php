@@ -27,14 +27,24 @@ class SubscriptionController extends Controller
         }
 
         // Ищем подписчика (активную подписку)
+        // Приоритет: сначала ищем активного, затем любого по домену
         $subscriber = null;
         if ($apiToken) {
             $subscriber = Subscriber::where('api_token', $apiToken)->first();
         } elseif ($domain) {
+            // Сначала ищем активного подписчика
             $subscriber = Subscriber::where('domain', $domain)
                 ->where('is_active', true)
                 ->orderBy('subscription_end', 'desc')
                 ->first();
+            
+            // Если активного нет, ищем любого (на случай если статус изменился)
+            if (!$subscriber) {
+                $subscriber = Subscriber::where('domain', $domain)
+                    ->orderBy('subscription_end', 'desc')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+            }
         }
 
         // Ищем заявку на подписку
@@ -51,17 +61,17 @@ class SubscriptionController extends Controller
         if ($subscriber) {
             $subscriber->load('plan');
             
-            // Если запрос с api_token, возвращаем полный токен для синхронизации
+            // Всегда возвращаем полный токен для синхронизации с CRM
+            // CRM использует этот токен для последующих запросов
             $returnToken = $subscriber->api_token;
-            // Если запрос по домену без токена, возвращаем частично скрытый
-            if (!$apiToken && $domain) {
-                $returnToken = substr($subscriber->api_token, 0, 10) . '...';
-            }
+            
+            // Определяем статус: если is_active = true, то 'active', иначе 'inactive'
+            $status = $subscriber->is_active ? 'active' : 'inactive';
             
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'status' => 'active',
+                    'status' => $status,
                     'domain' => $subscriber->domain,
                     'api_token' => $returnToken,
                     'subscription_start' => $subscriber->subscription_start?->toDateString(),
