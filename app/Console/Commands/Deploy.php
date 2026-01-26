@@ -627,15 +627,18 @@ class Deploy extends Command
                     }
 
                     // Информация об обновлении кода
-                    if (isset($dataArray['commit_changed'])) {
+                    if (isset($dataArray['commit_changed']) && isset($dataArray['old_commit_hash']) && isset($dataArray['new_commit_hash'])) {
+                        $oldCommit = substr($dataArray['old_commit_hash'], 0, 7);
+                        $newCommit = substr($dataArray['new_commit_hash'], 0, 7);
+                        
                         if ($dataArray['commit_changed']) {
-                            $oldCommit = isset($dataArray['old_commit_hash']) ? substr($dataArray['old_commit_hash'], 0, 7) : 'unknown';
-                            $newCommit = isset($dataArray['new_commit_hash']) ? substr($dataArray['new_commit_hash'], 0, 7) : 'unknown';
-                            $this->info("     Код обновлен: {$oldCommit} → {$newCommit}");
+                            $this->info("     ✅ Код обновлен: {$oldCommit} → {$newCommit}");
                         } else {
-                            $currentCommit = isset($dataArray['new_commit_hash']) ? substr($dataArray['new_commit_hash'], 0, 7) : 'unknown';
-                            $this->line("     Код: актуален (коммит {$currentCommit})");
+                            $this->line("     ℹ️  Код актуален (коммит {$newCommit}, изменений нет)");
                         }
+                    } elseif (isset($dataArray['new_commit_hash'])) {
+                        $currentCommit = substr($dataArray['new_commit_hash'], 0, 7);
+                        $this->line("     📦 Текущий коммит: {$currentCommit}");
                     }
 
                     if (isset($dataArray['composer_install'])) {

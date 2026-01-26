@@ -56,11 +56,12 @@ class DeployController extends Controller
             
             Log::info("🌿 Используется ветка для деплоя: {$requestedBranch}");
 
+            // Получаем текущий commit hash ДО git pull
+            $oldCommitHash = $this->getCurrentCommitHash();
+            Log::info("📦 Commit до обновления: " . ($oldCommitHash ?: 'не определен'));
+
             // 1. Git pull
             $gitPullResult = $this->handleGitPull($requestedBranch);
-            
-            // Получаем текущий commit hash ПОСЛЕ настройки безопасной директории
-            $oldCommitHash = $this->getCurrentCommitHash();
             $result['data']['git_pull'] = $gitPullResult['status'];
             $result['data']['branch'] = $gitPullResult['branch'] ?? 'unknown';
             if (!$gitPullResult['success']) {
