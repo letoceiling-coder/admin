@@ -61,13 +61,13 @@
                 <div class="flex flex-wrap gap-2 items-center">
                   <router-link
                     :to="{ name: 'admin.plans.edit', params: { id: p.id } }"
-                    class="text-primary hover:underline"
+                    class="inline-flex items-center rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent/10 transition-colors"
                   >
                     Изменить
                   </router-link>
                   <button
                     type="button"
-                    class="text-red-600 dark:text-red-400 hover:underline disabled:opacity-50"
+                    class="inline-flex items-center rounded-md border border-red-600 dark:border-red-500 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     :disabled="deleteLoading[p.id]"
                     @click="confirmDelete(p)"
                   >
