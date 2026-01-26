@@ -73,6 +73,7 @@ class SubscriptionController extends Controller
                 'data' => [
                     'status' => $status,
                     'domain' => $subscriber->domain,
+                    'login' => $subscriber->login,
                     'api_token' => $returnToken,
                     'subscription_start' => $subscriber->subscription_start?->toDateString(),
                     'subscription_end' => $subscriber->subscription_end?->toDateString(),
@@ -103,6 +104,7 @@ class SubscriptionController extends Controller
                 'data' => [
                     'status' => $application->status,
                     'domain' => $application->domain,
+                    'login' => $application->email, // Для заявки логин = email
                     'api_token' => $returnToken,
                     'expires_at' => $application->expires_at?->toDateTimeString(),
                     'is_active' => $application->status === SubscriptionApplication::STATUS_APPROVED && !$application->isExpired(),
