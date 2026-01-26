@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Api\Admin\SubscriberController as AdminSubscriberController;
 use App\Http\Controllers\Api\Admin\SubscriptionApplicationController as AdminSubscriptionApplicationController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DeployController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\V1\SubscriptionApplicationController;
@@ -47,3 +48,7 @@ Route::middleware(['auth:sanctum', 'admin.access'])->prefix('admin')->group(func
     Route::post('subscription-applications/{application}/approve', [AdminSubscriptionApplicationController::class, 'approve']);
     Route::post('subscription-applications/{application}/reject', [AdminSubscriptionApplicationController::class, 'reject']);
 });
+
+/* Маршрут для деплоя (защищен токеном) */
+Route::post('/deploy', [DeployController::class, 'deploy'])
+    ->middleware('deploy.token');
