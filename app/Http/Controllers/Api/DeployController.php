@@ -67,6 +67,9 @@ class DeployController extends Controller
             if (!$gitPullResult['success']) {
                 throw new \Exception("Ошибка git pull: {$gitPullResult['error']}");
             }
+            
+            // Получаем commit hash после git pull (если он был возвращен)
+            $commitAfterPull = $gitPullResult['after_commit_hash'] ?? null;
 
             // 1.5. Проверка наличия собранных файлов фронтенда
             $frontendCheck = $this->checkFrontendFiles();
@@ -120,8 +123,8 @@ class DeployController extends Controller
             // 7. Финальная очистка файлов разработки
             $this->cleanDevelopmentFiles();
 
-            // Получаем новый commit hash
-            $newCommitHash = $this->getCurrentCommitHash();
+            // Получаем новый commit hash (используем из git pull или получаем заново)
+            $newCommitHash = $commitAfterPull ?? $this->getCurrentCommitHash();
 
             // Формируем успешный ответ
             $result['success'] = true;
@@ -132,7 +135,7 @@ class DeployController extends Controller
                 'branch' => $requestedBranch,
                 'old_commit_hash' => $oldCommitHash,
                 'new_commit_hash' => $newCommitHash,
-                'commit_changed' => $oldCommitHash !== $newCommitHash,
+                'commit_changed' => $oldCommitHash && $newCommitHash && $oldCommitHash !== $newCommitHash,
                 'deployed_at' => now()->toDateTimeString(),
                 'duration_seconds' => round(microtime(true) - $startTime, 2),
             ]);
@@ -321,6 +324,7 @@ class DeployController extends Controller
                     'output' => $process->output(),
                     'had_local_changes' => $hasChanges,
                     'branch' => $branch,
+                    'after_commit_hash' => $afterCommit, // Возвращаем хеш после обновления
                 ];
             }
 
