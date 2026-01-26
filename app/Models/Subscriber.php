@@ -31,4 +31,30 @@ class Subscriber extends Model
     {
         return $this->belongsTo(Plan::class);
     }
+
+    /**
+     * Проверить, истекла ли подписка
+     */
+    public function isExpired(): bool
+    {
+        if (!$this->subscription_end) {
+            return false; // Если дата не установлена, считаем что не истекла
+        }
+        
+        return $this->subscription_end->endOfDay()->isPast();
+    }
+
+    /**
+     * Получить актуальную активность подписки (с учетом даты окончания)
+     */
+    public function getActualIsActiveAttribute(): bool
+    {
+        // Если в БД is_active = false, то подписка неактивна
+        if (!$this->is_active) {
+            return false;
+        }
+        
+        // Если подписка истекла, она не может быть активной
+        return !$this->isExpired();
+    }
 }

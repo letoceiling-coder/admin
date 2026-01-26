@@ -65,6 +65,14 @@ class SubscriberController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        $end = $validated['subscription_end'] ?? ($subscriber->subscription_end?->format('Y-m-d'));
+        if ($request->boolean('is_active') && $end && $end < now()->format('Y-m-d')) {
+            return response()->json([
+                'message' => 'Подписка не может быть активной: срок действия истёк.',
+                'errors' => ['is_active' => ['Подписка не может быть активной: срок действия истёк.']],
+            ], 422);
+        }
+
         if (array_key_exists('subscription_start', $validated)) {
             $subscriber->subscription_start = $validated['subscription_start'];
         }

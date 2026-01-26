@@ -99,21 +99,27 @@
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
             <span class="text-sm font-medium text-foreground">Активен</span>
-            <div class="sm:col-span-2">
-              <input
-                id="sub-active"
-                v-model="rangeForm.is_active"
-                type="checkbox"
-                class="rounded border-input"
-              />
-              <label for="sub-active" class="ml-2 text-sm text-muted-foreground">Подписка активна</label>
+            <div class="sm:col-span-2 space-y-1">
+              <div class="flex items-center gap-2">
+                <input
+                  id="sub-active"
+                  v-model="rangeForm.is_active"
+                  type="checkbox"
+                  class="rounded border-input disabled:opacity-50 disabled:cursor-not-allowed"
+                  :disabled="isSubscriptionEndPast"
+                />
+                <label for="sub-active" class="text-sm text-muted-foreground">Подписка активна</label>
+              </div>
+              <p v-if="isSubscriptionEndPast" class="text-xs text-amber-600 dark:text-amber-400">
+                Подписка не может быть активной: срок действия истёк.
+              </p>
             </div>
           </div>
           <div class="flex flex-wrap gap-2 pt-2">
             <button
               type="submit"
               class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              :disabled="saving"
+              :disabled="saving || (isSubscriptionEndPast && rangeForm.is_active)"
             >
               {{ saving ? 'Сохранение…' : 'Сохранить' }}
             </button>
@@ -175,6 +181,17 @@ const hasPaymentData = computed(() => {
   return pd && typeof pd === 'object' && Object.keys(pd).length > 0;
 });
 
+const isSubscriptionEndPast = computed(() => {
+  const end = rangeForm.subscription_end;
+  if (!end || typeof end !== 'string') return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endDate = new Date(end);
+  if (isNaN(endDate.getTime())) return false;
+  endDate.setHours(0, 0, 0, 0);
+  return endDate < today;
+});
+
 function toYMD(val) {
   if (!val) return '';
   const d = new Date(val);
@@ -190,9 +207,20 @@ function syncRangeForm() {
   if (!s) return;
   rangeForm.subscription_start = toYMD(s.subscription_start);
   rangeForm.subscription_end = toYMD(s.subscription_end);
-  rangeForm.is_active = !!s.is_active;
+  const endPast = isEndDatePast(toYMD(s.subscription_end));
+  rangeForm.is_active = endPast ? false : !!s.is_active;
   rangeError.value = '';
   rangeSuccess.value = '';
+}
+
+function isEndDatePast(ymd) {
+  if (!ymd || typeof ymd !== 'string') return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(ymd);
+  if (isNaN(d.getTime())) return false;
+  d.setHours(0, 0, 0, 0);
+  return d < today;
 }
 
 async function fetchSubscriber() {
@@ -223,7 +251,7 @@ async function saveRange() {
     const payload = {
       subscription_start: rangeForm.subscription_start || null,
       subscription_end: rangeForm.subscription_end || null,
-      is_active: rangeForm.is_active,
+      is_active: isSubscriptionEndPast.value ? false : rangeForm.is_active,
     };
     const { data } = await apiClient.put('/admin/subscribers/' + id, payload);
     subscriber.value = data?.data ?? subscriber.value;
@@ -263,4 +291,13 @@ function formatDateTime(val) {
 }
 
 watch(() => route.params.id, fetchSubscriber, { immediate: true });
+
+watch(
+  () => rangeForm.subscription_end,
+  (end) => {
+    if (isEndDatePast(end) && rangeForm.is_active) {
+      rangeForm.is_active = false;
+    }
+  }
+);
 </script>

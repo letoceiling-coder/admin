@@ -1,15 +1,15 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-b87026ef.css",
+    "file": "assets/app-bc5cea21.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.css": {
-    "file": "assets/app-b87026ef.css",
+    "file": "assets/app-bc5cea21.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-b87026ef.css"
+      "assets/app-bc5cea21.css"
     ],
     "dynamicImports": [
       "resources/js/pages/HomePage.vue",
@@ -26,7 +26,7 @@
       "resources/js/pages/admin/PlanFormPage.vue",
       "resources/js/pages/admin/PlanFormPage.vue"
     ],
-    "file": "assets/app-f10ee27e.js",
+    "file": "assets/app-e05cb4f0.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   },
@@ -38,7 +38,7 @@
     "css": [
       "assets/AdminLayout-6c6b65d0.css"
     ],
-    "file": "assets/AdminLayout-c5e7d168.js",
+    "file": "assets/AdminLayout-e45b6526.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -46,7 +46,7 @@
     "src": "resources/js/layouts/AdminLayout.vue"
   },
   "resources/js/pages/HomePage.vue": {
-    "file": "assets/HomePage-fba4a4c3.js",
+    "file": "assets/HomePage-e5d89355.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -54,7 +54,7 @@
     "src": "resources/js/pages/HomePage.vue"
   },
   "resources/js/pages/admin/DashboardPage.vue": {
-    "file": "assets/DashboardPage-02cb6da4.js",
+    "file": "assets/DashboardPage-60ed17c4.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -62,7 +62,7 @@
     "src": "resources/js/pages/admin/DashboardPage.vue"
   },
   "resources/js/pages/admin/PlanFormPage.vue": {
-    "file": "assets/PlanFormPage-7e13ff04.js",
+    "file": "assets/PlanFormPage-9b248b7d.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -70,7 +70,7 @@
     "src": "resources/js/pages/admin/PlanFormPage.vue"
   },
   "resources/js/pages/admin/PlansPage.vue": {
-    "file": "assets/PlansPage-7c28c002.js",
+    "file": "assets/PlansPage-fafc8812.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -78,7 +78,7 @@
     "src": "resources/js/pages/admin/PlansPage.vue"
   },
   "resources/js/pages/admin/SubscriberDetailPage.vue": {
-    "file": "assets/SubscriberDetailPage-c6e6461f.js",
+    "file": "assets/SubscriberDetailPage-668fa12c.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -86,7 +86,7 @@
     "src": "resources/js/pages/admin/SubscriberDetailPage.vue"
   },
   "resources/js/pages/admin/SubscribersPage.vue": {
-    "file": "assets/SubscribersPage-14e71d3c.js",
+    "file": "assets/SubscribersPage-66a2a4a0.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -94,7 +94,7 @@
     "src": "resources/js/pages/admin/SubscribersPage.vue"
   },
   "resources/js/pages/admin/SubscriptionApplicationsPage.vue": {
-    "file": "assets/SubscriptionApplicationsPage-26463639.js",
+    "file": "assets/SubscriptionApplicationsPage-0147b624.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -102,7 +102,7 @@
     "src": "resources/js/pages/admin/SubscriptionApplicationsPage.vue"
   },
   "resources/js/pages/admin/auth/ForgotPasswordPage.vue": {
-    "file": "assets/ForgotPasswordPage-7be7aab5.js",
+    "file": "assets/ForgotPasswordPage-4a3cc9e5.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -110,7 +110,7 @@
     "src": "resources/js/pages/admin/auth/ForgotPasswordPage.vue"
   },
   "resources/js/pages/admin/auth/LoginPage.vue": {
-    "file": "assets/LoginPage-8216ac92.js",
+    "file": "assets/LoginPage-28da46fe.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -118,7 +118,7 @@
     "src": "resources/js/pages/admin/auth/LoginPage.vue"
   },
   "resources/js/pages/admin/auth/RegisterPage.vue": {
-    "file": "assets/RegisterPage-33833bb9.js",
+    "file": "assets/RegisterPage-65ac53b5.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -126,7 +126,7 @@
     "src": "resources/js/pages/admin/auth/RegisterPage.vue"
   },
   "resources/js/pages/admin/auth/ResetPasswordPage.vue": {
-    "file": "assets/ResetPasswordPage-2d963381.js",
+    "file": "assets/ResetPasswordPage-f4873839.js",
     "imports": [
       "resources/js/app.js"
     ],

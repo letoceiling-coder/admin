@@ -66,8 +66,18 @@ class SubscriptionController extends Controller
             // CRM использует этот токен для последующих запросов
             $returnToken = $subscriber->api_token;
             
-            // Определяем статус: если is_active = true, то 'active', иначе 'inactive'
-            $status = $subscriber->is_active ? 'active' : 'inactive';
+            // Проверяем актуальность подписки по дате окончания
+            $isExpired = $subscriber->isExpired();
+            $actualIsActive = $subscriber->actual_is_active; // Используем accessor из модели
+            
+            // Определяем статус на основе актуальной активности
+            if ($isExpired) {
+                $status = 'expired';
+            } elseif ($actualIsActive) {
+                $status = 'active';
+            } else {
+                $status = 'inactive';
+            }
             
             $responseData = [
                 'success' => true,
@@ -79,7 +89,7 @@ class SubscriptionController extends Controller
                     'subscription_start' => $subscriber->subscription_start?->toDateString(),
                     'subscription_end' => $subscriber->subscription_end?->toDateString(),
                     'expires_at' => $subscriber->subscription_end?->toDateTimeString(),
-                    'is_active' => $subscriber->is_active,
+                    'is_active' => $actualIsActive, // Используем актуальную активность с учетом даты
                     'plan' => $subscriber->plan ? [
                         'id' => $subscriber->plan->id,
                         'name' => $subscriber->plan->name,
@@ -93,12 +103,17 @@ class SubscriptionController extends Controller
             // Логируем данные перед отправкой
             Log::info('SubscriptionController (ADMIN): отправляем данные подписчика', [
                 'subscriber_id' => $subscriber->id,
+                'db_is_active' => $subscriber->is_active,
+                'actual_is_active' => $actualIsActive,
+                'is_expired' => $isExpired,
+                'subscription_end' => $subscriber->subscription_end?->toDateTimeString(),
+                'now' => now()->toDateTimeString(),
                 'has_login' => !empty($subscriber->login),
                 'login' => $subscriber->login,
                 'has_plan' => !is_null($subscriber->plan),
                 'plan_id' => $subscriber->plan?->id,
                 'plan_name' => $subscriber->plan?->name,
-                'response_data_keys' => array_keys($responseData['data']),
+                'status' => $status,
             ]);
             
             return response()->json($responseData);
