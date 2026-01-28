@@ -220,6 +220,11 @@
               <p style="margin: 0; font-size: 14px; color: #71717a; text-align: center;">
                 📩 Свяжитесь с нами — обсудим детали и стоимость.
               </p>
+              @if(!empty($unsubscribeUrl))
+              <p style="margin: 20px 0 0; font-size: 12px; color: #a1a1aa; text-align: center;">
+                <a href="{{ $unsubscribeUrl }}" style="color: #71717a; text-decoration: underline;">Не беспокоить</a> — отписаться от рассылки коммерческих предложений
+              </p>
+              @endif
             </td>
           </tr>
         </table>

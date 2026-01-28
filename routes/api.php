@@ -59,8 +59,13 @@ Route::middleware(['auth:sanctum', 'admin.access'])->prefix('admin')->group(func
     Route::get('commercial-proposal/preview', [AdminCommercialProposalController::class, 'preview']);
     Route::get('commercial-proposal/mailings', [AdminCommercialProposalController::class, 'index']);
     Route::post('commercial-proposal/send', [AdminCommercialProposalController::class, 'send']);
-    Route::post('commercial-proposal/mailings/{mailing}/resend', [AdminCommercialProposalController::class, 'resend']);
+    Route::post('commercial-proposal/resend', [AdminCommercialProposalController::class, 'resend']);
 });
+
+/* Публичная отписка от рассылки КП (подписанная ссылка из письма) */
+Route::get('commercial-proposal/unsubscribe', [AdminCommercialProposalController::class, 'unsubscribe'])
+    ->name('api.commercial-proposal.unsubscribe')
+    ->middleware('throttle:30,1');
 
 /* Маршрут для деплоя (защищен токеном) */
 Route::post('/deploy', [DeployController::class, 'deploy'])

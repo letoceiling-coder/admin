@@ -93,41 +93,56 @@
           <thead class="bg-muted/50 text-muted-foreground uppercase">
             <tr>
               <th class="px-4 py-3 font-medium">Email</th>
-              <th class="px-4 py-3 font-medium">Дата отправки</th>
+              <th class="px-4 py-3 font-medium">Отправлено раз</th>
+              <th class="px-4 py-3 font-medium">Дата последней</th>
+              <th class="px-4 py-3 font-medium">Доступность</th>
               <th class="px-4 py-3 font-medium">Действия</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
             <tr v-if="loadingMailings && !mailings.length" class="bg-card">
-              <td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Загрузка…</td>
+              <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">Загрузка…</td>
             </tr>
             <tr v-else-if="!mailings.length" class="bg-card">
-              <td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Рассылок пока нет</td>
+              <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">Рассылок пока нет</td>
             </tr>
             <tr
               v-for="m in mailings"
-              :key="m.id"
+              :key="m.email"
               class="bg-card hover:bg-accent/5 transition-colors"
             >
               <td class="px-4 py-3 font-medium text-foreground">{{ m.email }}</td>
-              <td class="px-4 py-3 text-muted-foreground">{{ formatDate(m.sent_at) }}</td>
+              <td class="px-4 py-3 text-muted-foreground">{{ m.send_count ?? 0 }}</td>
+              <td class="px-4 py-3 text-muted-foreground">{{ formatDate(m.last_sent_at) }}</td>
+              <td class="px-4 py-3">
+                <span
+                  :class="[
+                    'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
+                    m.can_send ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+                  ]"
+                >
+                  {{ m.can_send ? 'Можно' : 'Не беспокоить' }}
+                </span>
+              </td>
               <td class="px-4 py-3">
                 <button
+                  v-if="m.can_send"
                   type="button"
                   class="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  :disabled="resendLoading[m.id]"
+                  :disabled="resendLoading[m.email]"
                   :title="'Повторить отправку на ' + m.email"
                   @click="resend(m)"
                 >
-                  <svg v-if="resendLoading[m.id]" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <svg v-if="resendLoading[m.email]" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   <svg v-else class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
-                  {{ resendLoading[m.id] ? 'Отправка…' : 'Повторить' }}
+                  {{ resendLoading[m.email] ? 'Отправка…' : 'Повторить' }}
                 </button>
+                <span v-else class="text-muted-foreground text-xs">—</span>
               </td>
             </tr>
           </tbody>
@@ -257,11 +272,12 @@ async function send() {
   }
 }
 
-async function resend(mailing) {
-  resendLoading.value = { ...resendLoading.value, [mailing.id]: true };
+async function resend(m) {
+  if (!m.can_send) return;
+  resendLoading.value = { ...resendLoading.value, [m.email]: true };
   clearMessage();
   try {
-    const { data } = await apiClient.post(`/admin/commercial-proposal/mailings/${mailing.id}/resend`);
+    const { data } = await apiClient.post('/admin/commercial-proposal/resend', { email: m.email });
     message.value = data.message ?? 'КП повторно отправлено.';
     messageSuccess.value = true;
     loadMailings(mailingsPagination.value?.current_page ?? 1);
@@ -269,7 +285,7 @@ async function resend(mailing) {
     message.value = e.response?.data?.message ?? 'Ошибка повторной отправки.';
     messageSuccess.value = false;
   } finally {
-    resendLoading.value = { ...resendLoading.value, [mailing.id]: false };
+    resendLoading.value = { ...resendLoading.value, [m.email]: false };
   }
 }
 

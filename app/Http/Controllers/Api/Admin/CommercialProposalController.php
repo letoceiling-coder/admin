@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CommercialProposalMailing;
+use App\Models\CommercialProposalUnsubscribe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class CommercialProposalController extends Controller
@@ -19,6 +21,7 @@ class CommercialProposalController extends Controller
         $html = view('emails.commercial-proposal', [
             'botUrl' => 'https://t.me/' . self::BOT_USERNAME,
             'contactUrl' => 'https://t.me/' . self::CONTACT_USERNAME,
+            'unsubscribeUrl' => '#',
         ])->render();
 
         return response()->json(['html' => $html]);
@@ -29,9 +32,22 @@ class CommercialProposalController extends Controller
         $perPage = (int) $request->get('per_page', 20);
         $perPage = $perPage >= 1 && $perPage <= 100 ? $perPage : 20;
 
-        $mailings = CommercialProposalMailing::query()
-            ->orderByDesc('sent_at')
-            ->paginate($perPage);
+        $query = CommercialProposalMailing::query()
+            ->selectRaw('email, count(*) as send_count, max(sent_at) as last_sent_at')
+            ->groupBy('email')
+            ->orderByDesc('last_sent_at');
+
+        $mailings = $query->paginate($perPage);
+        $unsubscribedEmails = CommercialProposalUnsubscribe::query()
+            ->whereIn('email', $mailings->pluck('email'))
+            ->pluck('email')
+            ->flip()
+            ->toArray();
+
+        $mailings->getCollection()->transform(function ($item) use ($unsubscribedEmails) {
+            $item->can_send = !isset($unsubscribedEmails[$item->email]);
+            return $item;
+        });
 
         return response()->json($mailings);
     }
@@ -53,8 +69,20 @@ class CommercialProposalController extends Controller
         }
 
         $email = $request->input('email');
+
+        if (CommercialProposalUnsubscribe::isUnsubscribed($email)) {
+            return response()->json([
+                'message' => 'Этот адрес в списке «Не беспокоить». Отправка запрещена.',
+            ], 422);
+        }
+
         $botUrl = 'https://t.me/' . self::BOT_USERNAME;
         $contactUrl = 'https://t.me/' . self::CONTACT_USERNAME;
+        $unsubscribeUrl = URL::temporarySignedRoute(
+            'api.commercial-proposal.unsubscribe',
+            now()->addDays(30),
+            ['email' => $email]
+        );
 
         try {
             $fromAddress = config('mail.from.address');
@@ -62,6 +90,7 @@ class CommercialProposalController extends Controller
             Mail::send('emails.commercial-proposal', [
                 'botUrl' => $botUrl,
                 'contactUrl' => $contactUrl,
+                'unsubscribeUrl' => $unsubscribeUrl,
             ], function ($message) use ($email, $fromAddress, $fromName) {
                 $message->from($fromAddress, $fromName)
                     ->to($email)
@@ -82,11 +111,37 @@ class CommercialProposalController extends Controller
         return response()->json(['message' => 'Коммерческое предложение отправлено.']);
     }
 
-    public function resend(CommercialProposalMailing $mailing): JsonResponse
+    public function resend(Request $request): JsonResponse
     {
-        $email = $mailing->email;
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'email'],
+        ], [
+            'email.required' => 'Укажите email.',
+            'email.email' => 'Некорректный формат email.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Ошибка валидации.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $email = $request->input('email');
+
+        if (CommercialProposalUnsubscribe::isUnsubscribed($email)) {
+            return response()->json([
+                'message' => 'Этот адрес в списке «Не беспокоить». Повторная отправка запрещена.',
+            ], 422);
+        }
+
         $botUrl = 'https://t.me/' . self::BOT_USERNAME;
         $contactUrl = 'https://t.me/' . self::CONTACT_USERNAME;
+        $unsubscribeUrl = URL::temporarySignedRoute(
+            'api.commercial-proposal.unsubscribe',
+            now()->addDays(30),
+            ['email' => $email]
+        );
 
         try {
             $fromAddress = config('mail.from.address');
@@ -94,6 +149,7 @@ class CommercialProposalController extends Controller
             Mail::send('emails.commercial-proposal', [
                 'botUrl' => $botUrl,
                 'contactUrl' => $contactUrl,
+                'unsubscribeUrl' => $unsubscribeUrl,
             ], function ($message) use ($email, $fromAddress, $fromName) {
                 $message->from($fromAddress, $fromName)
                     ->to($email)
@@ -112,5 +168,21 @@ class CommercialProposalController extends Controller
         ]);
 
         return response()->json(['message' => 'КП повторно отправлено на ' . $email . '.']);
+    }
+
+    public function unsubscribe(Request $request)
+    {
+        if (!$request->hasValidSignature()) {
+            return response()->json(['message' => 'Недействительная или просроченная ссылка.'], 403);
+        }
+
+        $email = $request->query('email');
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['message' => 'Некорректный email.'], 422);
+        }
+
+        CommercialProposalUnsubscribe::firstOrCreate(['email' => $email]);
+
+        return response()->view('commercial-proposal-unsubscribed');
     }
 }
