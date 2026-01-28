@@ -80,6 +80,12 @@ const routes = [
         component: () => import('../pages/admin/PlanFormPage.vue'),
         meta: { title: 'Редактирование плана' },
       },
+      {
+        path: 'commercial-proposal',
+        name: 'admin.commercial-proposal',
+        component: () => import('../pages/admin/CommercialProposalPage.vue'),
+        meta: { title: 'Рассылка коммерческого предложения' },
+      },
     ],
   },
 ];

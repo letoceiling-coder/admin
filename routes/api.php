@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\CommercialProposalController as AdminCommercialProposalController;
 use App\Http\Controllers\Api\Admin\PlanController as AdminPlanController;
 use App\Http\Controllers\Api\Admin\SubscriberController as AdminSubscriberController;
 use App\Http\Controllers\Api\Admin\SubscriptionApplicationController as AdminSubscriptionApplicationController;
@@ -55,6 +56,10 @@ Route::middleware(['auth:sanctum', 'admin.access'])->prefix('admin')->group(func
     Route::get('subscription-applications', [AdminSubscriptionApplicationController::class, 'index']);
     Route::post('subscription-applications/{application}/approve', [AdminSubscriptionApplicationController::class, 'approve']);
     Route::post('subscription-applications/{application}/reject', [AdminSubscriptionApplicationController::class, 'reject']);
+    Route::get('commercial-proposal/preview', [AdminCommercialProposalController::class, 'preview']);
+    Route::get('commercial-proposal/mailings', [AdminCommercialProposalController::class, 'index']);
+    Route::post('commercial-proposal/send', [AdminCommercialProposalController::class, 'send']);
+    Route::post('commercial-proposal/mailings/{mailing}/resend', [AdminCommercialProposalController::class, 'resend']);
 });
 
 /* Маршрут для деплоя (защищен токеном) */

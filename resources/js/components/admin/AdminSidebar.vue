@@ -66,6 +66,22 @@
         </span>
         <span>Управление</span>
       </router-link>
+      <router-link
+        to="/admin/commercial-proposal"
+        :class="[
+          'nav-menu-item flex items-center rounded-xl text-sm font-medium transition-all px-4 py-3 gap-3',
+          $route.path.startsWith('/admin/commercial-proposal')
+            ? 'router-link-active bg-sidebar-accent text-sidebar-accent-foreground'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+        ]"
+      >
+        <span class="h-5 w-5 shrink-0">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+        </span>
+        <span>Рассылка КП</span>
+      </router-link>
       <div class="rounded-xl overflow-hidden">
         <div
           class="flex items-center rounded-xl text-sm font-medium text-sidebar-foreground/80 px-4 py-3 gap-3 cursor-default"
