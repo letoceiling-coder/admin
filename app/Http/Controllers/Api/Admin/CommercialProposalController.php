@@ -57,11 +57,15 @@ class CommercialProposalController extends Controller
         $contactUrl = 'https://t.me/' . self::CONTACT_USERNAME;
 
         try {
+            $fromAddress = config('mail.from.address');
+            $fromName = config('mail.from.name');
             Mail::send('emails.commercial-proposal', [
                 'botUrl' => $botUrl,
                 'contactUrl' => $contactUrl,
-            ], function ($message) use ($email) {
-                $message->to($email)
+            ], function ($message) use ($email, $fromAddress, $fromName) {
+                $message->from($fromAddress, $fromName)
+                    ->to($email)
+                    ->replyTo($fromAddress, $fromName)
                     ->subject('Коммерческое предложение: Telegram-бот с Mini App для приёма заказов');
             });
         } catch (\Throwable $e) {
@@ -85,11 +89,15 @@ class CommercialProposalController extends Controller
         $contactUrl = 'https://t.me/' . self::CONTACT_USERNAME;
 
         try {
+            $fromAddress = config('mail.from.address');
+            $fromName = config('mail.from.name');
             Mail::send('emails.commercial-proposal', [
                 'botUrl' => $botUrl,
                 'contactUrl' => $contactUrl,
-            ], function ($message) use ($email) {
-                $message->to($email)
+            ], function ($message) use ($email, $fromAddress, $fromName) {
+                $message->from($fromAddress, $fromName)
+                    ->to($email)
+                    ->replyTo($fromAddress, $fromName)
                     ->subject('Коммерческое предложение: Telegram-бот с Mini App для приёма заказов');
             });
         } catch (\Throwable $e) {
