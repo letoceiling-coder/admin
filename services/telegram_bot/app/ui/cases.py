@@ -3,7 +3,7 @@ import logging
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 
-from app.bot import bot
+from app.bot_instance import bot
 from app.http import get_cases, get_case, post_event
 from app.storage import rate_limit_allow, append_temp_message_id
 from app.ui.helpers import delete_temp_messages, btn
@@ -16,28 +16,41 @@ def _back():
     return InlineKeyboardMarkup(inline_keyboard=[[btn("◀ Назад", "screen:home")]])
 
 
-@router.callback_query(F.data == "screen:cases")
-async def cb_cases(cq: CallbackQuery):
-    await cq.answer()
-    user_id = cq.from_user.id if cq.from_user else 0
+async def show_cases_screen(chat_id: int, user_id: int, message_id: int) -> bool:
+    """Показать экран «Кейсы» в сообщении message_id (для Reply-кнопок). Возвращает True при успехе."""
     if not await rate_limit_allow(user_id):
-        await cq.answer("Подождите минуту.", show_alert=True)
-        return
-    await delete_temp_messages(bot, cq.message.chat.id, user_id)  # type: ignore
+        return False
+    await delete_temp_messages(bot, chat_id, user_id)
     r, err = await get_cases()
     if err:
-        await cq.message.edit_text(err, reply_markup=_back())  # type: ignore
-        return
+        await bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=err, reply_markup=_back())
+        return True
     items = (r.get("data") if isinstance(r, dict) else []) or []
     await post_event(user_id, "screen_view", {"screen": "cases"})
     if not items:
-        await cq.message.edit_text("Нет кейсов.", reply_markup=_back())  # type: ignore
-        return
+        await bot.edit_message_text(chat_id=chat_id, message_id=message_id, text="Нет кейсов.", reply_markup=_back())
+        return True
     rows = []
     for c in items[:10]:
         rows.append([btn(c.get("title", "—"), f"case:{c.get('id')}")])
     rows.append([btn("◀ Назад", "screen:home")])
-    await cq.message.edit_text("💼 Кейсы. Выберите:", reply_markup=InlineKeyboardMarkup(inline_keyboard=rows))  # type: ignore
+    await bot.edit_message_text(
+        chat_id=chat_id, message_id=message_id,
+        text="💼 Кейсы. Выберите:",
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=rows),
+    )
+    return True
+
+
+@router.callback_query(F.data == "screen:cases")
+async def cb_cases(cq: CallbackQuery):
+    await cq.answer()
+    user_id = cq.from_user.id if cq.from_user else 0
+    chat_id = cq.message.chat.id if cq.message else 0
+    if not await rate_limit_allow(user_id):
+        await cq.answer("Подождите минуту.", show_alert=True)
+        return
+    await show_cases_screen(chat_id, user_id, cq.message.message_id)  # type: ignore
 
 
 @router.callback_query(F.data.startswith("case:"))

@@ -1,9 +1,16 @@
-"""HOME screen: welcome, start, hero (offer + 6 buttons + optional CTA)."""
+"""HOME screen: welcome, start, hero (offer + 6 buttons + optional CTA). Reply keyboard always visible."""
 import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (
+    Message,
+    CallbackQuery,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+)
 
-from app.bot import bot
+from app.bot_instance import bot
 from app.http import get_settings, post_event
 from app.storage import get_hero_message_id, set_hero_message_id, clear_hero_message_id, rate_limit_allow, clear_fsm_state
 from app.ui.helpers import edit_or_send_hero, delete_temp_messages, btn
@@ -11,27 +18,63 @@ from app.ui.helpers import edit_or_send_hero, delete_temp_messages, btn
 router = Router(name="home")
 logger = logging.getLogger(__name__)
 
+# Тексты Reply-кнопок (постоянное меню) — те же, что и в меню
+REPLY_BTN_SERVICES = "🧩 Услуги"
+REPLY_BTN_CASES = "💼 Кейсы"
+REPLY_BTN_REVIEWS = "⭐ Отзывы"
+REPLY_BTN_SUPPORT = "🆘 Поддержка"
+REPLY_BTN_SITE = "🌐 Сайт"
+REPLY_BTN_PRESENTATION = "📎 Презентация"
+REPLY_BTN_LEAD = "📝 Оставить заявку"
+REPLY_BTN_MANAGER = "💬 Написать менеджеру"
 
-def _home_keyboard(settings: dict) -> InlineKeyboardMarkup:
+
+def _reply_keyboard(settings: dict) -> ReplyKeyboardMarkup:
+    """Постоянная клавиатура внизу экрана (всегда на виду)."""
     row1 = [
-        btn("🧩 Услуги", "screen:services"),
-        btn("💼 Кейсы", "screen:cases"),
-        btn("⭐ Отзывы", "screen:reviews"),
+        KeyboardButton(text=REPLY_BTN_SERVICES),
+        KeyboardButton(text=REPLY_BTN_CASES),
+        KeyboardButton(text=REPLY_BTN_REVIEWS),
     ]
     row2 = [
-        btn("🆘 Поддержка", "screen:support"),
-        btn("🌐 Сайт", "screen:site"),
-        btn("📎 Презентация", "screen:presentation"),
+        KeyboardButton(text=REPLY_BTN_SUPPORT),
+        KeyboardButton(text=REPLY_BTN_SITE),
+        KeyboardButton(text=REPLY_BTN_PRESENTATION),
     ]
     rows = [row1, row2]
     flags = settings.get("feature_flags") or {}
     if flags.get("cta_buttons"):
-        rows.append([btn("📝 Оставить заявку", "flow:lead"), btn("💬 Написать менеджеру", "cta:manager")])
+        rows.append([
+            KeyboardButton(text=REPLY_BTN_LEAD),
+            KeyboardButton(text=REPLY_BTN_MANAGER),
+        ])
+    return ReplyKeyboardMarkup(
+        keyboard=rows,
+        resize_keyboard=True,
+        is_persistent=True,
+    )
+
+
+def _home_keyboard(settings: dict) -> InlineKeyboardMarkup:
+    row1 = [
+        btn(REPLY_BTN_SERVICES, "screen:services"),
+        btn(REPLY_BTN_CASES, "screen:cases"),
+        btn(REPLY_BTN_REVIEWS, "screen:reviews"),
+    ]
+    row2 = [
+        btn(REPLY_BTN_SUPPORT, "screen:support"),
+        btn(REPLY_BTN_SITE, "screen:site"),
+        btn(REPLY_BTN_PRESENTATION, "screen:presentation"),
+    ]
+    rows = [row1, row2]
+    flags = settings.get("feature_flags") or {}
+    if flags.get("cta_buttons"):
+        rows.append([btn(REPLY_BTN_LEAD, "flow:lead"), btn(REPLY_BTN_MANAGER, "cta:manager")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 async def _show_home(chat_id: int, user_id: int, text: str, settings: dict, from_callback: bool = False):
-    kbd = _home_keyboard(settings)
+    reply_kbd = _reply_keyboard(settings)
     banner_id = (settings.get("home_banner_file_id") or "").strip()
     if from_callback:
         await delete_temp_messages(bot, chat_id, user_id)
@@ -42,18 +85,18 @@ async def _show_home(chat_id: int, user_id: int, text: str, settings: dict, from
             except Exception:
                 pass
             await clear_hero_message_id(user_id)
-        await edit_or_send_hero(bot, chat_id, user_id, text, kbd)
+        await edit_or_send_hero(bot, chat_id, user_id, text, reply_kbd)
         return
     if not banner_id:
-        await edit_or_send_hero(bot, chat_id, user_id, text, kbd)
+        await edit_or_send_hero(bot, chat_id, user_id, text, reply_kbd)
         return
     await delete_temp_messages(bot, chat_id, user_id)
     try:
-        m = await bot.send_photo(chat_id=chat_id, photo=banner_id, caption=text, reply_markup=kbd)
+        m = await bot.send_photo(chat_id=chat_id, photo=banner_id, caption=text, reply_markup=reply_kbd)
         await set_hero_message_id(user_id, m.message_id)
     except Exception as e:
         logger.warning("send_banner_failed %s", e)
-        await edit_or_send_hero(bot, chat_id, user_id, text, kbd)
+        await edit_or_send_hero(bot, chat_id, user_id, text, reply_kbd)
 
 
 @router.message(F.text.in_(["/start", "Старт", "▶️ Старт", "старт"]))
@@ -139,3 +182,108 @@ async def cta_manager(cq: CallbackQuery):
         await cq.answer(url=f"https://t.me/{username}")
     else:
         await cq.answer("Менеджер не настроен.", show_alert=True)
+
+
+# ---------- Reply-кнопки (постоянное меню): тот же функционал, что и callback ----------
+
+
+@router.message(F.text == REPLY_BTN_SERVICES)
+async def msg_services(message: Message):
+    user_id = message.from_user.id if message.from_user else 0
+    chat_id = message.chat.id
+    mid = await get_hero_message_id(user_id)
+    if not mid:
+        await message.answer("Нажмите /start.")
+        return
+    from app.ui.services import show_services_screen
+    if not await show_services_screen(chat_id, user_id, mid):
+        await message.answer("Подождите минуту.")
+
+
+@router.message(F.text == REPLY_BTN_CASES)
+async def msg_cases(message: Message):
+    user_id = message.from_user.id if message.from_user else 0
+    chat_id = message.chat.id
+    mid = await get_hero_message_id(user_id)
+    if not mid:
+        await message.answer("Нажмите /start.")
+        return
+    from app.ui.cases import show_cases_screen
+    if not await show_cases_screen(chat_id, user_id, mid):
+        await message.answer("Подождите минуту.")
+
+
+@router.message(F.text == REPLY_BTN_REVIEWS)
+async def msg_reviews(message: Message):
+    user_id = message.from_user.id if message.from_user else 0
+    chat_id = message.chat.id
+    mid = await get_hero_message_id(user_id)
+    if not mid:
+        await message.answer("Нажмите /start.")
+        return
+    from app.ui.reviews import show_reviews_screen
+    if not await show_reviews_screen(chat_id, user_id, mid):
+        await message.answer("Подождите минуту.")
+
+
+@router.message(F.text == REPLY_BTN_SUPPORT)
+async def msg_support(message: Message):
+    user_id = message.from_user.id if message.from_user else 0
+    chat_id = message.chat.id
+    mid = await get_hero_message_id(user_id)
+    if not mid:
+        await message.answer("Нажмите /start.")
+        return
+    from app.ui.support import show_support_screen
+    if not await show_support_screen(chat_id, user_id, mid):
+        await message.answer("Подождите минуту.")
+
+
+@router.message(F.text == REPLY_BTN_SITE)
+async def msg_site(message: Message):
+    settings_data, _ = await get_settings()
+    settings = (settings_data or {}).get("data") if isinstance(settings_data, dict) else {}
+    url = (settings.get("site_url") or "").strip()
+    if url:
+        await message.answer(f"Сайт: {url}")
+    else:
+        await message.answer("Сайт не настроен.")
+
+
+@router.message(F.text == REPLY_BTN_PRESENTATION)
+async def msg_presentation(message: Message):
+    user_id = message.from_user.id if message.from_user else 0
+    chat_id = message.chat.id
+    settings_data, _ = await get_settings()
+    settings = (settings_data or {}).get("data") if isinstance(settings_data, dict) else {}
+    file_id = (settings.get("presentation_file_id") or "").strip()
+    url = (settings.get("presentation_url") or "").strip()
+    if file_id:
+        try:
+            from app.storage import append_temp_message_id
+            m = await bot.send_document(chat_id=chat_id, document=file_id)
+            await append_temp_message_id(user_id, m.message_id)
+        except Exception as e:
+            logger.warning("send_presentation_failed %s", e)
+            await message.answer("Не удалось отправить файл.")
+    elif url:
+        await message.answer(f"Презентация: {url}")
+    else:
+        await message.answer("Презентация не настроена.")
+
+
+@router.message(F.text == REPLY_BTN_LEAD)
+async def msg_lead(message: Message):
+    from app.flows.lead import start_lead_flow_from_message
+    await start_lead_flow_from_message(message)
+
+
+@router.message(F.text == REPLY_BTN_MANAGER)
+async def msg_manager(message: Message):
+    settings_data, _ = await get_settings()
+    settings = (settings_data or {}).get("data") if isinstance(settings_data, dict) else {}
+    username = (settings.get("manager_username") or "").strip().lstrip("@")
+    if username:
+        await message.answer(f"Написать менеджеру: https://t.me/{username}")
+    else:
+        await message.answer("Менеджер не настроен.")

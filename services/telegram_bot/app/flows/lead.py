@@ -3,9 +3,9 @@ import logging
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup
 
-from app.bot import bot
+from app.bot_instance import bot
 from app.http import get_settings, post_lead, post_event
-from app.storage import get_fsm_state, set_fsm_state, clear_fsm_state, rate_limit_allow
+from app.storage import get_fsm_state, set_fsm_state, clear_fsm_state, rate_limit_allow, get_hero_message_id
 from app.ui.helpers import edit_or_send_hero, delete_temp_messages, btn
 from app.ui.home import _show_home
 
@@ -38,6 +38,28 @@ async def start_lead_flow(cq: CallbackQuery, source_service_id: int = None, sour
     await cq.message.edit_text("Введите ваше имя или нажмите «Пропустить»:", reply_markup=kbd)  # type: ignore
 
 
+async def start_lead_flow_from_message(message: Message):
+    """Запуск сценария заявки по нажатию Reply-кнопки «Оставить заявку»."""
+    user_id = message.from_user.id if message.from_user else 0
+    chat_id = message.chat.id
+    mid = await get_hero_message_id(user_id)
+    if not mid:
+        await message.answer("Нажмите /start.")
+        return
+    name = (message.from_user.full_name or "").strip() if message.from_user else ""
+    username = (message.from_user.username or "").strip() or None if message.from_user else None
+    await set_fsm_state(user_id, "lead:name", {"source_service_id": None, "source_case_id": None, "name": name, "username": username})
+    kbd = InlineKeyboardMarkup(inline_keyboard=[
+        [btn("Пропустить", "flow:lead:skip_name")],
+        [btn("◀ Отмена", "screen:home")],
+    ])
+    try:
+        await message.delete()
+    except Exception:
+        pass
+    await bot.edit_message_text(chat_id=chat_id, message_id=mid, text="Введите ваше имя или нажмите «Пропустить»:", reply_markup=kbd)
+
+
 @router.callback_query(F.data == "flow:lead")
 async def cb_lead_start(cq: CallbackQuery):
     await start_lead_flow(cq)
@@ -65,7 +87,6 @@ async def msg_lead_step(message: Message):
         return
     state = st.get("state")
     data = st.get("data") or {}
-    from app.storage import get_hero_message_id
     mid = await get_hero_message_id(user_id)
     try:
         await message.delete()

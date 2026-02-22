@@ -1,0 +1,18 @@
+[Unit]
+Description=Neeklo Studio Telegram Bot
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/admin.neeklo.ru/services/telegram_bot
+EnvironmentFile=/var/www/admin.neeklo.ru/services/telegram_bot/.env
+ExecStart=/var/www/admin.neeklo.ru/services/telegram_bot/.venv/bin/python -m app.main
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

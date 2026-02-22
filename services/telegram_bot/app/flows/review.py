@@ -3,7 +3,7 @@ import logging
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup
 
-from app.bot import bot
+from app.bot_instance import bot
 from app.http import post_review
 from app.storage import get_fsm_state, set_fsm_state, clear_fsm_state, get_hero_message_id, can_submit_review, set_review_submitted
 from app.ui.helpers import btn

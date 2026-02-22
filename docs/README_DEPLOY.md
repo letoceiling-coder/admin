@@ -4,6 +4,15 @@
 
 ---
 
+## ⚠️ Важно: Nginx и сертификаты
+
+- **Не затирать и не удалять** существующие конфиги других сайтов и доменов на сервере.
+- Конфиг для admin.neeklo.ru (например, `tools/deploy/admin.neeklo.ru.nginx.conf`) — **только образец**. Его нужно **добавить** к уже существующим виртуальным хостам (отдельный файл в `sites-available` + симлинк в `sites-enabled`), а не подменять им все сайты.
+- **Не запускать** `certbot --nginx` по всем доменам — это может переписать конфиги. Для нового домена использовать `certbot certonly --webroot -w ... -d домен`.
+- Если после настройки сайтов/сертификатов другие домены или поддомены перестали работать: **docs/RESTORE_SITES_AND_CERTIFICATES.md** — пошаговое восстановление без удаления существующей конфигурации.
+
+---
+
 ## 1. Требования
 
 - **PHP** >= 8.2, расширения: `bcmath`, `ctype`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`, `xml`, `redis` (для кэша/очередей и бота)
@@ -215,8 +224,34 @@ sudo supervisorctl start neeklo-bot
 sudo supervisorctl status neeklo-bot
 ```
 
+### 8.8 Webhook на сервере (чтобы бот отвечал на /start)
+
+Если бот не отвечает в Telegram, он либо не запущен, либо Telegram не знает, куда слать обновления. На сервере с Nginx (например admin.neeklo.ru) используйте **webhook**:
+
+1. **Redis** — должен быть доступен (хост/порт в `REDIS_URL`).
+2. **.env бота** в `services/telegram_bot/`:
+   - `TELEGRAM_BOT_TOKEN` — токен от @BotFather.
+   - `CRM_API_BASE_URL=https://admin.neeklo.ru`
+   - `CRM_BOT_API_TOKEN` — тот же, что в Laravel `.env`.
+   - `REDIS_URL=redis://127.0.0.1:6379/0` (или ваш Redis).
+   - `MODE=webhook`
+   - `WEBHOOK_BASE_URL=https://admin.neeklo.ru`
+   - `WEBHOOK_PATH=/webhook`
+   - `HEALTH_PORT=8088`
+3. **Nginx** — в конфиг HTTPS-хоста admin.neeklo.ru добавить проксирование `/webhook` на `http://127.0.0.1:8088` (пример: **`services/telegram_bot/deploy/nginx-webhook.conf`**). Выполнить `nginx -t && systemctl reload nginx`.
+4. **Запуск бота** — из каталога `services/telegram_bot`: `python -m app.main` (или через systemd/supervisor). При старте бот сам вызовет `setWebhook`; дополнительно регистрировать webhook вручную не нужно.
+5. **Проверка** — в Telegram отправить боту `/start`. Должен прийти ответ.
+
+Подробнее: **`services/telegram_bot/DEPLOY.md`**, раздел 6.
+
 ---
 
 ## 9. Nginx: проброс /health бота (опционально)
 
 Если нужно отдавать `/health` бота через Nginx (например, для внешнего мониторинга), используйте пример: **`services/telegram_bot/deploy/nginx-health.conf`**. По умолчанию health доступен только на localhost:8088.
+
+---
+
+## 10. Восстановление сайтов и сертификатов
+
+Если при настройке Nginx или выпуске сертификатов пострадали другие сайты, домены или поддомены: **не удалять и не затирать** существующие конфиги. Пошаговая инструкция по восстановлению без потери данных: **docs/RESTORE_SITES_AND_CERTIFICATES.md**.
