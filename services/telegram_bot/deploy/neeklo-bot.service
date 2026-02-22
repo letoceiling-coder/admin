@@ -1,0 +1,23 @@
+# Пример unit-файла для systemd.
+# Установка: sudo cp services/telegram_bot/deploy/neeklo-bot.service /etc/systemd/system/
+# Затем: sudo systemctl daemon-reload && sudo systemctl enable --now neeklo-bot
+# Логи: journalctl -u neeklo-bot -f
+
+[Unit]
+Description=Neeklo Studio Telegram Bot
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/admin-crm/services/telegram_bot
+EnvironmentFile=/opt/admin-crm/services/telegram_bot/.env
+ExecStart=/opt/admin-crm/services/telegram_bot/.venv/bin/python -m app.main
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

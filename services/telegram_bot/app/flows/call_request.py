@@ -16,7 +16,8 @@ async def start_call_flow(cq: CallbackQuery):
     await cq.answer()
     user_id = cq.from_user.id if cq.from_user else 0
     username = (cq.from_user.username or "").strip() or None if cq.from_user else None
-    await set_fsm_state(user_id, "call:phone", {"username": username})
+    full_name = (cq.from_user.full_name or "").strip() if cq.from_user else ""
+    await set_fsm_state(user_id, "call:phone", {"username": username, "full_name": full_name})
     await cq.message.edit_text("Введите телефон:", reply_markup=InlineKeyboardMarkup(inline_keyboard=[[btn("◀ Отмена", "screen:home")]]))
 
 
@@ -83,5 +84,8 @@ async def _submit_call(user_id: int, chat_id: int, data: dict):
         await bot.send_message(chat_id=chat_id, text=err)
     else:
         await bot.send_message(chat_id=chat_id, text="Заявка на звонок принята.")
-        await _notify_admin(f"Call request\nUser: {user_id}\nPhone: {data.get('phone')}\nTime: {data.get('preferred_time')}\nComment: {data.get('comment')}")
+        link = f"tg://user?id={user_id}"
+        name_part = (data.get("full_name") or "—").strip()
+        uname_part = f"@{data.get('username')}" if data.get("username") else "—"
+        await _notify_admin(f"Call request\nUser: {name_part} {uname_part} {link}\nPhone: {data.get('phone')}\nTime: {data.get('preferred_time')}\nComment: {data.get('comment')}")
     await _go_home(chat_id, user_id)

@@ -134,19 +134,12 @@ async def cb_lead_deadline(cq: CallbackQuery):
 
 
 async def _submit_lead(user_id: int, chat_id: int, data: dict):
-    username = None
-    from app.bot import bot
-    try:
-        u = await bot.get_chat(chat_id)
-        if u.username:
-            username = u.username
-    except Exception:
-        pass
+    username = data.get("username")
     payload = {
         "tg_user_id": user_id,
         "username": username,
         "full_name": data.get("name"),
-        "phone": data.get("contact") or username or "n/a",
+        "phone": data.get("contact") or (f"@{username}" if username else "n/a"),
         "message": data.get("message"),
         "source_service_id": data.get("source_service_id"),
         "source_case_id": data.get("source_case_id"),
@@ -158,9 +151,10 @@ async def _submit_lead(user_id: int, chat_id: int, data: dict):
         await _go_home(chat_id, user_id)
         return
     await post_event(user_id, "lead_created", {"source_service_id": data.get("source_service_id"), "source_case_id": data.get("source_case_id")})
-    uname = username
     link = f"tg://user?id={user_id}"
-    notify_text = f"Lead\nUser: {data.get('name')} @{uname or '—'} {link}\nContact: {payload.get('phone')}\nMessage: {data.get('message')}\nService: {data.get('source_service_id')} Case: {data.get('source_case_id')}"
+    name_part = (data.get("name") or "—").strip()
+    uname_part = f"@{username}" if username else "—"
+    notify_text = f"Lead\nUser: {name_part} {uname_part} {link}\nContact: {payload.get('phone')}\nMessage: {data.get('message')}\nSource: service_id={data.get('source_service_id')} case_id={data.get('source_case_id')}"
     await _notify_admin(notify_text)
     await bot.send_message(chat_id=chat_id, text="Заявка отправлена. Мы свяжемся с вами.")
     await _go_home(chat_id, user_id)

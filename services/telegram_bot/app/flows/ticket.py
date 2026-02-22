@@ -4,7 +4,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup
 
 from app.bot import bot
-from app.http import post_ticket
+from app.http import post_ticket, post_event
 from app.storage import get_fsm_state, set_fsm_state, clear_fsm_state, get_hero_message_id
 from app.ui.helpers import btn
 from app.flows.lead import _notify_admin, _go_home
@@ -16,7 +16,8 @@ async def start_ticket_flow(cq: CallbackQuery):
     await cq.answer()
     user_id = cq.from_user.id if cq.from_user else 0
     username = (cq.from_user.username or "").strip() or None if cq.from_user else None
-    await set_fsm_state(user_id, "ticket:subject", {"username": username})
+    full_name = (cq.from_user.full_name or "").strip() if cq.from_user else ""
+    await set_fsm_state(user_id, "ticket:subject", {"username": username, "full_name": full_name})
     await cq.message.edit_text("Тема обращения:", reply_markup=InlineKeyboardMarkup(inline_keyboard=[[btn("◀ Отмена", "screen:home")]]))
 
 
@@ -50,7 +51,7 @@ async def _submit_ticket(user_id: int, chat_id: int, data: dict):
     payload = {
         "tg_user_id": user_id,
         "username": data.get("username"),
-        "full_name": None,
+        "full_name": data.get("full_name"),
         "subject": data.get("subject") or "—",
         "message": data.get("message") or "—",
     }

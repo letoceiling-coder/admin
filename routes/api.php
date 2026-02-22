@@ -107,6 +107,7 @@ Route::prefix('telegram')->middleware(['telegram.bot.token', 'throttle:telegram-
 
 /* /api/crm/telegram/* — CRUD для админки CRM (auth:sanctum + admin.access) */
 Route::middleware(['auth:sanctum', 'admin.access'])->prefix('crm/telegram')->group(function () {
+    Route::get('analytics/top', [CrmTelegramAnalyticsController::class, 'top']);
     Route::get('settings', [CrmTelegramSettingsController::class, 'index']);
     Route::put('settings', [CrmTelegramSettingsController::class, 'update']);
     Route::get('service-categories', [CrmTelegramServiceCategoryController::class, 'index']);
