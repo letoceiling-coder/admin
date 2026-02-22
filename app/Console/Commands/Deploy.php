@@ -280,7 +280,10 @@ class Deploy extends Command
         }
 
         // Увеличиваем таймаут до 5 минут (300 секунд) для сборки фронтенда
-        $process = Process::timeout(300)->run('npm run build');
+        // path(base_path()) — всегда запускать в корне проекта (где package.json)
+        $process = Process::timeout(300)
+            ->path(base_path())
+            ->run('npm run build');
 
         if (!$process->successful()) {
             throw new \Exception("Ошибка сборки фронтенда:\n" . $process->errorOutput());

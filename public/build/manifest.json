@@ -1,15 +1,21 @@
 {
+  "_NotificationDropdown-0eed3f23.js": {
+    "file": "assets/NotificationDropdown-0eed3f23.js",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
   "resources/css/app.css": {
-    "file": "assets/app-30efaf74.css",
+    "file": "assets/app-d082e711.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.css": {
-    "file": "assets/app-30efaf74.css",
+    "file": "assets/app-d082e711.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-30efaf74.css"
+      "assets/app-d082e711.css"
     ],
     "dynamicImports": [
       "resources/js/pages/HomePage.vue",
@@ -25,29 +31,56 @@
       "resources/js/pages/admin/PlansPage.vue",
       "resources/js/pages/admin/PlanFormPage.vue",
       "resources/js/pages/admin/PlanFormPage.vue",
-      "resources/js/pages/admin/CommercialProposalPage.vue"
+      "resources/js/pages/admin/CommercialProposalPage.vue",
+      "resources/js/layouts/CrmLayout.vue",
+      "resources/js/pages/crm/DashboardPage.vue",
+      "resources/js/pages/crm/neeklo-bot/SettingsPage.vue",
+      "resources/js/pages/crm/neeklo-bot/ServicesPage.vue",
+      "resources/js/pages/crm/neeklo-bot/ServiceCategoriesPage.vue",
+      "resources/js/pages/crm/neeklo-bot/CasesPage.vue",
+      "resources/js/pages/crm/neeklo-bot/ReviewsPage.vue",
+      "resources/js/pages/crm/neeklo-bot/FaqPage.vue",
+      "resources/js/pages/crm/neeklo-bot/LeadsPage.vue",
+      "resources/js/pages/crm/neeklo-bot/TicketsPage.vue"
     ],
-    "file": "assets/app-25073f1d.js",
+    "file": "assets/app-17f36d69.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   },
   "resources/js/layouts/AdminLayout.css": {
-    "file": "assets/AdminLayout-3fc062f5.css",
+    "file": "assets/AdminLayout-a8adffbe.css",
     "src": "resources/js/layouts/AdminLayout.css"
   },
   "resources/js/layouts/AdminLayout.vue": {
     "css": [
-      "assets/AdminLayout-3fc062f5.css"
+      "assets/AdminLayout-a8adffbe.css"
     ],
-    "file": "assets/AdminLayout-5eb7a6c9.js",
+    "file": "assets/AdminLayout-dbc79ce6.js",
     "imports": [
-      "resources/js/app.js"
+      "resources/js/app.js",
+      "_NotificationDropdown-0eed3f23.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/layouts/AdminLayout.vue"
   },
+  "resources/js/layouts/CrmLayout.css": {
+    "file": "assets/CrmLayout-674ea139.css",
+    "src": "resources/js/layouts/CrmLayout.css"
+  },
+  "resources/js/layouts/CrmLayout.vue": {
+    "css": [
+      "assets/CrmLayout-674ea139.css"
+    ],
+    "file": "assets/CrmLayout-b7a429a3.js",
+    "imports": [
+      "resources/js/app.js",
+      "_NotificationDropdown-0eed3f23.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/layouts/CrmLayout.vue"
+  },
   "resources/js/pages/HomePage.vue": {
-    "file": "assets/HomePage-ab9ff1d0.js",
+    "file": "assets/HomePage-31875947.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -55,7 +88,7 @@
     "src": "resources/js/pages/HomePage.vue"
   },
   "resources/js/pages/admin/CommercialProposalPage.vue": {
-    "file": "assets/CommercialProposalPage-84254c48.js",
+    "file": "assets/CommercialProposalPage-9484ffb7.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -63,7 +96,7 @@
     "src": "resources/js/pages/admin/CommercialProposalPage.vue"
   },
   "resources/js/pages/admin/DashboardPage.vue": {
-    "file": "assets/DashboardPage-a1457a39.js",
+    "file": "assets/DashboardPage-468b5c3e.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -71,7 +104,7 @@
     "src": "resources/js/pages/admin/DashboardPage.vue"
   },
   "resources/js/pages/admin/PlanFormPage.vue": {
-    "file": "assets/PlanFormPage-8a1d7824.js",
+    "file": "assets/PlanFormPage-5a4334cf.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -79,7 +112,7 @@
     "src": "resources/js/pages/admin/PlanFormPage.vue"
   },
   "resources/js/pages/admin/PlansPage.vue": {
-    "file": "assets/PlansPage-4e2449bb.js",
+    "file": "assets/PlansPage-ace04767.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -87,7 +120,7 @@
     "src": "resources/js/pages/admin/PlansPage.vue"
   },
   "resources/js/pages/admin/SubscriberDetailPage.vue": {
-    "file": "assets/SubscriberDetailPage-ceb9dcb5.js",
+    "file": "assets/SubscriberDetailPage-1034d340.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -95,7 +128,7 @@
     "src": "resources/js/pages/admin/SubscriberDetailPage.vue"
   },
   "resources/js/pages/admin/SubscribersPage.vue": {
-    "file": "assets/SubscribersPage-75f32a9f.js",
+    "file": "assets/SubscribersPage-ee716a73.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -103,7 +136,7 @@
     "src": "resources/js/pages/admin/SubscribersPage.vue"
   },
   "resources/js/pages/admin/SubscriptionApplicationsPage.vue": {
-    "file": "assets/SubscriptionApplicationsPage-6a87f390.js",
+    "file": "assets/SubscriptionApplicationsPage-8925f954.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -111,7 +144,7 @@
     "src": "resources/js/pages/admin/SubscriptionApplicationsPage.vue"
   },
   "resources/js/pages/admin/auth/ForgotPasswordPage.vue": {
-    "file": "assets/ForgotPasswordPage-389994bb.js",
+    "file": "assets/ForgotPasswordPage-68c5a4bf.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -119,7 +152,7 @@
     "src": "resources/js/pages/admin/auth/ForgotPasswordPage.vue"
   },
   "resources/js/pages/admin/auth/LoginPage.vue": {
-    "file": "assets/LoginPage-8c62d2e7.js",
+    "file": "assets/LoginPage-f754abba.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -127,7 +160,7 @@
     "src": "resources/js/pages/admin/auth/LoginPage.vue"
   },
   "resources/js/pages/admin/auth/RegisterPage.vue": {
-    "file": "assets/RegisterPage-9dfeaf0c.js",
+    "file": "assets/RegisterPage-d165fa0b.js",
     "imports": [
       "resources/js/app.js"
     ],
@@ -135,11 +168,83 @@
     "src": "resources/js/pages/admin/auth/RegisterPage.vue"
   },
   "resources/js/pages/admin/auth/ResetPasswordPage.vue": {
-    "file": "assets/ResetPasswordPage-c576be20.js",
+    "file": "assets/ResetPasswordPage-8a54295c.js",
     "imports": [
       "resources/js/app.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/pages/admin/auth/ResetPasswordPage.vue"
+  },
+  "resources/js/pages/crm/DashboardPage.vue": {
+    "file": "assets/DashboardPage-ff33074a.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/DashboardPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/CasesPage.vue": {
+    "file": "assets/CasesPage-61904e9d.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/CasesPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/FaqPage.vue": {
+    "file": "assets/FaqPage-3605f6bb.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/FaqPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/LeadsPage.vue": {
+    "file": "assets/LeadsPage-bb4fdf0b.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/LeadsPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/ReviewsPage.vue": {
+    "file": "assets/ReviewsPage-b44a8f4d.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/ReviewsPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/ServiceCategoriesPage.vue": {
+    "file": "assets/ServiceCategoriesPage-23b37602.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/ServiceCategoriesPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/ServicesPage.vue": {
+    "file": "assets/ServicesPage-6204d365.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/ServicesPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/SettingsPage.vue": {
+    "file": "assets/SettingsPage-b60092c8.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/SettingsPage.vue"
+  },
+  "resources/js/pages/crm/neeklo-bot/TicketsPage.vue": {
+    "file": "assets/TicketsPage-fd9fafe9.js",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/pages/crm/neeklo-bot/TicketsPage.vue"
   }
 }

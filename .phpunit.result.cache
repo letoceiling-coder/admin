@@ -1,0 +1,1 @@
+{"version":2,"defects":[],"times":{"Tests\\Feature\\TelegramBotApiTest::test_telegram_settings_returns_401_without_token":1.29,"Tests\\Feature\\TelegramBotApiTest::test_telegram_settings_returns_401_with_wrong_token":0.003,"Tests\\Feature\\TelegramBotApiTest::test_telegram_settings_returns_200_with_valid_token":0.103}}
