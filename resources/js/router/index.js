@@ -148,6 +148,12 @@ const routes = [
         component: () => import('../pages/crm/neeklo-bot/TicketsPage.vue'),
         meta: { title: 'Тикеты' },
       },
+      {
+        path: 'documents',
+        name: 'crm.documents',
+        component: () => import('../pages/crm/DocumentsPage.vue'),
+        meta: { title: 'Документация' },
+      },
     ],
   },
 ];
