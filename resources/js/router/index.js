@@ -88,6 +88,20 @@ const routes = [
       },
     ],
   },
+  /* /crm/* — те же пользователи что и /admin (manager, administrator) */
+  {
+    path: '/crm',
+    component: () => import('../layouts/CrmLayout.vue'),
+    meta: { requiresAuth: true, requiresAdminAccess: true },
+    children: [
+      {
+        path: '',
+        name: 'crm.dashboard',
+        component: () => import('../pages/crm/DashboardPage.vue'),
+        meta: { title: 'CRM' },
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

@@ -82,6 +82,22 @@
         </span>
         <span>Рассылка КП</span>
       </router-link>
+      <router-link
+        to="/crm"
+        :class="[
+          'nav-menu-item flex items-center rounded-xl text-sm font-medium transition-all px-4 py-3 gap-3',
+          $route.path.startsWith('/crm')
+            ? 'router-link-active bg-sidebar-accent text-sidebar-accent-foreground'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+        ]"
+      >
+        <span class="h-5 w-5 shrink-0">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path>
+          </svg>
+        </span>
+        <span>CRM</span>
+      </router-link>
       <div class="rounded-xl overflow-hidden">
         <div
           class="flex items-center rounded-xl text-sm font-medium text-sidebar-foreground/80 px-4 py-3 gap-3 cursor-default"

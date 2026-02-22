@@ -100,7 +100,7 @@ async function handleSubmit() {
     });
     const redirect = route.query.redirect;
     if (auth.hasAdminPanelAccess) {
-      router.push(redirect && String(redirect).startsWith('/admin') ? redirect : { name: 'admin.dashboard' });
+      router.push(redirect && (String(redirect).startsWith('/admin') || String(redirect).startsWith('/crm')) ? redirect : { name: 'admin.dashboard' });
     } else {
       router.push({ path: '/' });
     }
