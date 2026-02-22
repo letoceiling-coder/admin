@@ -17,6 +17,15 @@ use App\Http\Controllers\Api\Telegram\ReviewController as TelegramReviewControll
 use App\Http\Controllers\Api\Telegram\ServiceCategoryController as TelegramServiceCategoryController;
 use App\Http\Controllers\Api\Telegram\SettingsController as TelegramSettingsController;
 use App\Http\Controllers\Api\Telegram\TicketController as TelegramTicketController;
+use App\Http\Controllers\Api\Crm\Telegram\CaseController as CrmTelegramCaseController;
+use App\Http\Controllers\Api\Crm\Telegram\CaseMediaController as CrmTelegramCaseMediaController;
+use App\Http\Controllers\Api\Crm\Telegram\FaqController as CrmTelegramFaqController;
+use App\Http\Controllers\Api\Crm\Telegram\LeadController as CrmTelegramLeadController;
+use App\Http\Controllers\Api\Crm\Telegram\ReviewController as CrmTelegramReviewController;
+use App\Http\Controllers\Api\Crm\Telegram\ServiceCategoryController as CrmTelegramServiceCategoryController;
+use App\Http\Controllers\Api\Crm\Telegram\ServiceController as CrmTelegramServiceController;
+use App\Http\Controllers\Api\Crm\Telegram\SettingsController as CrmTelegramSettingsController;
+use App\Http\Controllers\Api\Crm\Telegram\TicketController as CrmTelegramTicketController;
 use App\Http\Controllers\Api\V1\SubscriptionApplicationController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Http\Request;
@@ -94,4 +103,39 @@ Route::prefix('telegram')->middleware(['telegram.bot.token', 'throttle:telegram-
     Route::post('tickets', [TelegramTicketController::class, 'store']);
     Route::post('reviews', [TelegramReviewController::class, 'store']);
     Route::post('events', [TelegramEventController::class, 'store']);
+});
+
+/* /api/crm/telegram/* — CRUD для админки CRM (auth:sanctum + admin.access) */
+Route::middleware(['auth:sanctum', 'admin.access'])->prefix('crm/telegram')->group(function () {
+    Route::get('settings', [CrmTelegramSettingsController::class, 'index']);
+    Route::put('settings', [CrmTelegramSettingsController::class, 'update']);
+    Route::get('service-categories', [CrmTelegramServiceCategoryController::class, 'index']);
+    Route::post('service-categories', [CrmTelegramServiceCategoryController::class, 'store']);
+    Route::put('service-categories/{id}', [CrmTelegramServiceCategoryController::class, 'update']);
+    Route::delete('service-categories/{id}', [CrmTelegramServiceCategoryController::class, 'destroy']);
+    Route::get('services', [CrmTelegramServiceController::class, 'index']);
+    Route::post('services', [CrmTelegramServiceController::class, 'store']);
+    Route::put('services/{id}', [CrmTelegramServiceController::class, 'update']);
+    Route::delete('services/{id}', [CrmTelegramServiceController::class, 'destroy']);
+    Route::get('cases', [CrmTelegramCaseController::class, 'index']);
+    Route::post('cases', [CrmTelegramCaseController::class, 'store']);
+    Route::put('cases/{id}', [CrmTelegramCaseController::class, 'update']);
+    Route::delete('cases/{id}', [CrmTelegramCaseController::class, 'destroy']);
+    Route::get('cases/{id}/media', [CrmTelegramCaseController::class, 'media']);
+    Route::post('cases/{id}/media', [CrmTelegramCaseController::class, 'storeMedia']);
+    Route::put('case-media/{id}', [CrmTelegramCaseMediaController::class, 'update']);
+    Route::delete('case-media/{id}', [CrmTelegramCaseMediaController::class, 'destroy']);
+    Route::get('reviews', [CrmTelegramReviewController::class, 'index']);
+    Route::put('reviews/{id}', [CrmTelegramReviewController::class, 'update']);
+    Route::post('reviews/{id}/approve', [CrmTelegramReviewController::class, 'approve']);
+    Route::post('reviews/{id}/reject', [CrmTelegramReviewController::class, 'reject']);
+    Route::get('faq', [CrmTelegramFaqController::class, 'index']);
+    Route::post('faq', [CrmTelegramFaqController::class, 'store']);
+    Route::put('faq/{id}', [CrmTelegramFaqController::class, 'update']);
+    Route::delete('faq/{id}', [CrmTelegramFaqController::class, 'destroy']);
+    Route::get('leads/export.csv', [CrmTelegramLeadController::class, 'exportCsv']);
+    Route::get('leads', [CrmTelegramLeadController::class, 'index']);
+    Route::put('leads/{id}', [CrmTelegramLeadController::class, 'update']);
+    Route::get('tickets', [CrmTelegramTicketController::class, 'index']);
+    Route::put('tickets/{id}', [CrmTelegramTicketController::class, 'update']);
 });
