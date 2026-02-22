@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin.access' => \App\Http\Middleware\EnsureAdminAccess::class,
         'deploy.token' => \App\Http\Middleware\VerifyDeployToken::class,
+        'telegram.bot.token' => \App\Http\Middleware\TelegramBotTokenAuth::class,
     ];
 }

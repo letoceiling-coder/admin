@@ -8,6 +8,15 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DeployController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\Telegram\CallRequestController as TelegramCallRequestController;
+use App\Http\Controllers\Api\Telegram\CaseController as TelegramCaseController;
+use App\Http\Controllers\Api\Telegram\EventController as TelegramEventController;
+use App\Http\Controllers\Api\Telegram\FaqController as TelegramFaqController;
+use App\Http\Controllers\Api\Telegram\LeadController as TelegramLeadController;
+use App\Http\Controllers\Api\Telegram\ReviewController as TelegramReviewController;
+use App\Http\Controllers\Api\Telegram\ServiceCategoryController as TelegramServiceCategoryController;
+use App\Http\Controllers\Api\Telegram\SettingsController as TelegramSettingsController;
+use App\Http\Controllers\Api\Telegram\TicketController as TelegramTicketController;
 use App\Http\Controllers\Api\V1\SubscriptionApplicationController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Http\Request;
@@ -70,3 +79,19 @@ Route::get('commercial-proposal/unsubscribe', [AdminCommercialProposalController
 /* Маршрут для деплоя (защищен токеном) */
 Route::post('/deploy', [DeployController::class, 'deploy'])
     ->middleware('deploy.token');
+
+/* /api/telegram/* — для микросервиса бота: Bearer CRM_BOT_API_TOKEN + rate limit */
+Route::prefix('telegram')->middleware(['telegram.bot.token', 'throttle:telegram-bot'])->group(function () {
+    Route::get('settings', [TelegramSettingsController::class, 'index']);
+    Route::get('services/categories', [TelegramServiceCategoryController::class, 'categories']);
+    Route::get('services', [TelegramServiceCategoryController::class, 'services']);
+    Route::get('cases', [TelegramCaseController::class, 'index']);
+    Route::get('cases/{id}', [TelegramCaseController::class, 'show']);
+    Route::get('reviews', [TelegramReviewController::class, 'index']);
+    Route::get('faq', [TelegramFaqController::class, 'index']);
+    Route::post('leads', [TelegramLeadController::class, 'store']);
+    Route::post('call-requests', [TelegramCallRequestController::class, 'store']);
+    Route::post('tickets', [TelegramTicketController::class, 'store']);
+    Route::post('reviews', [TelegramReviewController::class, 'store']);
+    Route::post('events', [TelegramEventController::class, 'store']);
+});
